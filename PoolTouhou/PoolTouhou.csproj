@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>PoolTouhou</RootNamespace>
     <AssemblyName>PoolTouhou</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
@@ -55,6 +55,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\GameObject\ICollideable.cs" />
     <Compile Include="src\GameState\IGameState.cs" />
     <Compile Include="src\GameState\TitleState.cs" />
     <Compile Include="src\MainForm.cs">
@@ -65,7 +66,7 @@
     <Compile Include="src\UI\Button\GameStartButton.cs" />
     <Compile Include="src\UI\Button\TitleExitButton.cs" />
     <Compile Include="src\UI\Button\IButton.cs" />
-    <Compile Include="src\UI\IDrawble.cs" />
+    <Compile Include="src\UI\IDrawable.cs" />
     <Compile Include="src\UI\IUpdatble.cs" />
     <Compile Include="src\Utils\InputData.cs" />
     <Compile Include="src\Utils\Util.cs" />
@@ -78,9 +79,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="src\MainForm.resx">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -97,15 +95,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="res\**\*.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="res\background\loading.jpg" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="src\GameObject" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

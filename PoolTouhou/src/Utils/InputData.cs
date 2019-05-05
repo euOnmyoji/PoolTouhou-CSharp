@@ -5,6 +5,7 @@ namespace PoolTouhou.Utils {
     public class InputData {
         public static readonly HashSet<int> KEY_PRESSED = new HashSet<int>();
         private static InputData last { get; set; } = empty();
+        public bool noInput { get; private set; }
         public int shoot { get; private set; }
         public int spell { get; private set; }
         public int up { get; private set; }
@@ -13,13 +14,21 @@ namespace PoolTouhou.Utils {
         public int right { get; private set; }
 
         public InputData() {
+            if (KEY_PRESSED.Count > 0) {
+                noInput = false;
+                shoot = KEY_PRESSED.Contains('Z') ? last.shoot + 1 : 0;
+                spell = KEY_PRESSED.Contains('X') ? last.spell + 1 : 0;
+                up = KEY_PRESSED.Contains((int) Keys.Up) ? last.up + 1 : 0;
+                down = KEY_PRESSED.Contains((int) Keys.Down) ? last.down + 1 : 0;
+                left = KEY_PRESSED.Contains((int) Keys.Left) ? last.left + 1 : 0;
+                right = KEY_PRESSED.Contains((int) Keys.Right) ? last.right + 1 : 0;
+            } else {
+                noInput = true;
+            }
+        }
 
-            shoot = KEY_PRESSED.Contains('Z') ? last.shoot + 1 : 0;
-            spell = KEY_PRESSED.Contains('X') ? last.spell + 1 : 0;
-            up = KEY_PRESSED.Contains((int) Keys.Up) ? last.up + 1 : 0;
-            down = KEY_PRESSED.Contains((int) Keys.Down) ? last.down + 1 : 0;
-            left = KEY_PRESSED.Contains((int) Keys.Left) ? last.left + 1 : 0;
-            right = KEY_PRESSED.Contains((int) Keys.Right) ? last.right + 1 : 0;
+        public bool isNoMove() {
+            return up == down && left == right;
         }
 
         public void step() {
@@ -33,7 +42,8 @@ namespace PoolTouhou.Utils {
                 up = 0,
                 down = 0,
                 left = 0,
-                right = 0
+                right = 0,
+                noInput = true
             };
         }
     }

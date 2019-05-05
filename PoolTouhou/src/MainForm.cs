@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
+using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using PoolTouhou.GameState;
@@ -14,6 +11,7 @@ using SharpDX.Direct2D1;
 namespace PoolTouhou {
     public class MainForm : Form {
         public static IGameState gameState;
+        private readonly Stopwatch watch = new Stopwatch();
         private volatile bool running = true;
         private double fps { get; set; } = 60f;
         private int paintCount { get; set; } = 0;
@@ -43,21 +41,29 @@ namespace PoolTouhou {
         }
 
         private const double constFps = 60.0;
-        private const double timeInPerFrame = 1000.0 / constFps;
+        private const double timeInPerFrame = 1.0 / constFps;
 
         private void loop() {
             try {
+                long frequency = Stopwatch.Frequency;
+                if (!Stopwatch.IsHighResolution) {
+                    frequency = 1;
+                }
+                double oneMsCount = 0.001 * frequency;
+                double oneFrameCount = timeInPerFrame * frequency;
                 while (running) {
-                    var start = DateTime.Now;
+                    watch.Restart();
                     draw();
-                    var end = DateTime.Now;
-                    double phase = end.Subtract(start).Duration().TotalMilliseconds;
-                    if (phase < timeInPerFrame) {
-                        Thread.Sleep(TimeSpan.FromMilliseconds(timeInPerFrame - phase));
+                    long elapsed = watch.ElapsedTicks;
+                    if (elapsed + oneMsCount < oneFrameCount) {
+                        Thread.Sleep((int) ((oneFrameCount - elapsed - oneMsCount) / frequency));
+                    }
+
+                    while (watch.ElapsedTicks < oneFrameCount) {
+                        //not done
                     }
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 MessageBox.Show(e.Message + Environment.NewLine + e.StackTrace, @"很抱歉出错了！");
                 Application.Exit();
             }
@@ -77,8 +83,8 @@ namespace PoolTouhou {
             initializeComponent();
             components = new Container();
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1280, 960);
-            Size = new Size(1280, 960);
+            ClientSize = new Size(1600, 900);
+            Size = new Size(1600, 900);
             SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);
             BackColor = Color.Black;
             Text = @"PoolTouhou";
@@ -89,13 +95,21 @@ namespace PoolTouhou {
                 Hwnd = Handle, PixelSize = new SharpDX.Size2(Width, Height), PresentOptions = PresentOptions.None
             };
 
-            var r = new RenderTargetProperties(RenderTargetType.Hardware, p, 0, 0, RenderTargetUsage.None,
-                FeatureLevel.Level_DEFAULT);
+            var r = new RenderTargetProperties(
+                RenderTargetType.Hardware,
+                p,
+                0,
+                0,
+                RenderTargetUsage.None,
+                FeatureLevel.Level_DEFAULT
+            );
             renderTarget = new WindowRenderTarget(d2dFactory, r, h);
-            new Thread(() => {
-                gameState = new LoadMenuState();
-                loop();
-            }).Start();
+            new Thread(
+                () => {
+                    gameState = new LoadMenuState();
+                    loop();
+                }
+            ).Start();
         }
 
         protected override void OnKeyDown(KeyEventArgs e) {
@@ -106,8 +120,6 @@ namespace PoolTouhou {
         protected override void OnKeyUp(KeyEventArgs e) {
             base.OnKeyUp(e);
             InputData.KEY_PRESSED.Remove(e.KeyValue);
-
-
         }
 
         private void initializeComponent() {

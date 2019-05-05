@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading;
-using System.Windows.Forms;
 using PoolTouhou.UI.Button;
 using PoolTouhou.Utils;
 using SharpDX.Direct2D1;
@@ -9,12 +8,8 @@ using static PoolTouhou.Utils.Util;
 
 namespace PoolTouhou.GameState {
     internal class MenuState : IGameState {
-        private readonly IButton[] buttons = {new GameStartButton(), new TitleExitButton()};
+        private readonly Button[] buttons = {new GameStartButton(), new TitleExitButton()};
         private int curSelect;
-
-        public MenuState() {
-            buttons[curSelect].select();
-        }
 
         public void draw(RenderTarget target) {
             target.Clear(new RawColor4(0, 0, 0, 0));
@@ -24,6 +19,8 @@ namespace PoolTouhou.GameState {
         }
 
         public void update(ref InputData input) {
+            if (input.noInput) return;
+
             if (input.shoot == 1) {
                 buttons[curSelect].click();
             } else if (input.spell == 1) {
@@ -32,7 +29,7 @@ namespace PoolTouhou.GameState {
                     curSelect = 1;
                     buttons[curSelect].select();
                 }
-            } else if (input.down < 1 || input.up < 1) {
+            } else if (!input.isNoMove()) {
                 //切换选中按钮
                 const int cd = 10;
                 const int firstCd = 30;
@@ -62,13 +59,18 @@ namespace PoolTouhou.GameState {
         );
 
         private readonly Bitmap background = loadBitMapFromFile(
-            "res/background/loading.jpg",
+            "res/background/loading.png",
             SharpDX.WIC.PixelFormat.Format32bppPRGBA
         );
 
         private bool startLoading;
-        private short tick { get; set; }
-        private short add { get; set; } = 1;
+        private readonly DateTime start = DateTime.Now;
+
+        private MenuState menuState;
+
+        public LoadMenuState() {
+            new Thread(() => menuState = new MenuState()).Start();
+        }
 
         ~LoadMenuState() {
             loadingMap.Dispose();
@@ -76,19 +78,21 @@ namespace PoolTouhou.GameState {
         }
 
         public void draw(RenderTarget target) {
-            tick += add;
-            if (tick == 60) {
-                add = -1;
-            } else if (tick == 0) {
-                if (!startLoading) {
-                    startLoading = true;
-                    new Thread(() => MainForm.gameState = new MenuState()).Start();
+            //loading won't last long?
+            float ms = (float) DateTime.Now.Subtract(start).TotalMilliseconds;
+            if (ms > 2000) {
+                ms -= 2000;
+                startLoading = true;
+                while (ms > 2000) {
+                    ms -= 2000;
                 }
-
-                add = 1;
             }
 
-            float alpha = tick / 120.0f + 0.5f;
+            if (ms > 1000) {
+                ms = 2000 - ms;
+            }
+
+            float alpha = ms / 2000 + 0.5f;
 
             var size = target.Size;
             float scale = size.Width / 640.0f;
@@ -126,6 +130,9 @@ namespace PoolTouhou.GameState {
         }
 
         public void update(ref InputData input) {
+            if (startLoading && menuState != null) {
+                MainForm.gameState = menuState;
+            }
         }
 
         public string getStateName() {

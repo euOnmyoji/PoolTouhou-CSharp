@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing.Imaging;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Reflection;
 using System.Windows.Forms;
-using SharpDX.Direct2D1;
 
 namespace PoolTouhou {
     public static class PoolTouhou {
@@ -14,14 +10,21 @@ namespace PoolTouhou {
         /// 应用程序的主入口点。
         /// </summary>
         [STAThread]
-        // ReSharper disable once InconsistentNaming
-        private static void Main() {
-            Console.WriteLine(@"start");
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            mainForm = new MainForm();
-            mainForm.init();
+        // ReSharper disable all (It's Main!)
+        public static int Main(string[] args) {
+            try {
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                mainForm = new MainForm();
+                mainForm.init();
+            } catch (Exception e) {
+                MessageBox.Show(e.Message + Environment.NewLine + e.StackTrace, @"很抱歉出错了！");
+                Application.Exit();
+                return 1;
+            }
+
             Application.Run(mainForm);
+            return 0;
         }
     }
 }

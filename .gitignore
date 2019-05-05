@@ -1,7 +1,9 @@
+#vs and output files
 .vs
 Debug
 Release
 obj
 packages
-*.user
+
+#idea config
 .idea
