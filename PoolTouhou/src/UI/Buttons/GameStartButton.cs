@@ -1,7 +1,7 @@
 using SharpDX.Direct2D1;
 using SharpDX.Mathematics.Interop;
 
-namespace PoolTouhou.UI.Button {
+namespace PoolTouhou.UI.Buttons {
     public class GameStartButton : Button {
         private const float dx = 128;
         private const float dy = 15;
@@ -13,7 +13,7 @@ namespace PoolTouhou.UI.Button {
             this.selected = selected;
         }
 
-        public override void draw(RenderTarget renderTarget) {
+        public override void Draw(RenderTarget renderTarget) {
             var size = renderTarget.Size;
             float xScala = size.Width / 640;
             float yScala = size.Height / 480;
@@ -28,8 +28,7 @@ namespace PoolTouhou.UI.Button {
                 }
             }
 
-            getOffset(selected, out int xOffset, out int yOffset);
-
+            GetOffset(selected, out int xOffset, out int yOffset);
             renderTarget.DrawBitmap(
                 ButtonsResources.TITLE01,
                 new RawRectangleF(
@@ -44,18 +43,18 @@ namespace PoolTouhou.UI.Button {
             );
         }
 
-        public override void select() {
+        public override void Select() {
             selected = 1;
         }
 
-        public override void click() {
+        public override void Click() {
         }
 
-        public override string getName() {
+        public override string GetName() {
             return "GameStart";
         }
 
-        public override void unselect() {
+        public override void Unselect() {
             selected = 0;
         }
     }

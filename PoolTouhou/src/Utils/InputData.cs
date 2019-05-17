@@ -4,46 +4,46 @@ using System.Windows.Forms;
 namespace PoolTouhou.Utils {
     public class InputData {
         public static readonly HashSet<int> KEY_PRESSED = new HashSet<int>();
-        private static InputData last { get; set; } = empty();
-        public bool noInput { get; private set; }
-        public int shoot { get; private set; }
-        public int spell { get; private set; }
-        public int up { get; private set; }
-        public int down { get; private set; }
-        public int left { get; private set; }
-        public int right { get; private set; }
+        private static InputData Last { get; set; } = Empty();
+        public bool NoInput { get; private set; }
+        public int Shoot { get; private set; }
+        public int Spell { get; private set; }
+        public int Up { get; private set; }
+        public int Down { get; private set; }
+        public int Left { get; private set; }
+        public int Right { get; private set; }
 
         public InputData() {
             if (KEY_PRESSED.Count > 0) {
-                noInput = false;
-                shoot = KEY_PRESSED.Contains('Z') ? last.shoot + 1 : 0;
-                spell = KEY_PRESSED.Contains('X') ? last.spell + 1 : 0;
-                up = KEY_PRESSED.Contains((int) Keys.Up) ? last.up + 1 : 0;
-                down = KEY_PRESSED.Contains((int) Keys.Down) ? last.down + 1 : 0;
-                left = KEY_PRESSED.Contains((int) Keys.Left) ? last.left + 1 : 0;
-                right = KEY_PRESSED.Contains((int) Keys.Right) ? last.right + 1 : 0;
+                NoInput = false;
+                Shoot = KEY_PRESSED.Contains('Z') ? Last.Shoot + 1 : 0;
+                Spell = KEY_PRESSED.Contains('X') ? Last.Spell + 1 : 0;
+                Up = KEY_PRESSED.Contains((int) Keys.Up) ? Last.Up + 1 : 0;
+                Down = KEY_PRESSED.Contains((int) Keys.Down) ? Last.Down + 1 : 0;
+                Left = KEY_PRESSED.Contains((int) Keys.Left) ? Last.Left + 1 : 0;
+                Right = KEY_PRESSED.Contains((int) Keys.Right) ? Last.Right + 1 : 0;
             } else {
-                noInput = true;
+                NoInput = true;
             }
         }
 
-        public bool isNoMove() {
-            return up == down && left == right;
+        public bool IsNoMove() {
+            return Up == Down && Left == Right;
         }
 
-        public void step() {
-            last = this;
+        public void Step() {
+            Last = this;
         }
 
-        private static InputData empty() {
+        private static InputData Empty() {
             return new InputData {
-                shoot = 0,
-                spell = 0,
-                up = 0,
-                down = 0,
-                left = 0,
-                right = 0,
-                noInput = true
+                Shoot = 0,
+                Spell = 0,
+                Up = 0,
+                Down = 0,
+                Left = 0,
+                Right = 0,
+                NoInput = true
             };
         }
     }

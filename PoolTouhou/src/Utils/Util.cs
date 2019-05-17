@@ -4,7 +4,7 @@ using SharpDX.WIC;
 
 namespace PoolTouhou.Utils {
     public static class Util {
-        public static SharpDX.Direct2D1.Bitmap loadBitMapFromFile(string path, Guid guid, bool useDefault = true) {
+        public static SharpDX.Direct2D1.Bitmap LoadBitMapFromFile(string path, Guid guid, bool useDefault = true) {
             var imageFactory = new ImagingFactory2();
             if (!File.Exists(path) && useDefault) {
                 path = @"res/404notfound.png";
@@ -14,7 +14,7 @@ namespace PoolTouhou.Utils {
             var convert = new FormatConverter(imageFactory);
             convert.Initialize(firstFrame, guid, BitmapDitherType.None, null, 0.0, BitmapPaletteType.Custom);
 
-            var map = SharpDX.Direct2D1.Bitmap.FromWicBitmap(PoolTouhou.mainForm.renderTarget, convert);
+            var map = SharpDX.Direct2D1.Bitmap.FromWicBitmap(PoolTouhou.MainForm.RenderTarget, convert);
 
             decoder.Dispose();
             firstFrame.Dispose();

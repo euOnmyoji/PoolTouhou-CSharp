@@ -2,6 +2,6 @@
 
 namespace PoolTouhou.GameState {
     public interface IGameState : IDrawable, IUpdatble {
-        string getStateName();
+        string GetStateName();
     }
 }

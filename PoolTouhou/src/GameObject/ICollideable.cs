@@ -11,13 +11,13 @@ namespace PoolTouhou.GameObject {
         /// </summary>
         /// <param name="that"></param>
         /// <returns></returns>
-        int isCollided(ICollideable that);
+        int IsCollided(ICollideable that);
 
-        PointF getCenter();
+        PointF GetCenter();
 
-        int getA();
-        int getB();
-        double getR();
-        double getP();
+        int GetA();
+        int GetB();
+        double GetR();
+        double GetP();
     }
 }

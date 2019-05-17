@@ -1,25 +1,25 @@
+using PoolTouhou.Utils;
 using SharpDX.Direct2D1;
-using static PoolTouhou.Utils.Util;
 using Bitmap = SharpDX.Direct2D1.Bitmap;
 using PixelFormat = SharpDX.WIC.PixelFormat;
 
-namespace PoolTouhou.UI.Button {
+namespace PoolTouhou.UI.Buttons {
     public static class ButtonsResources {
-        public static readonly Bitmap TITLE01 = loadBitMapFromFile(
+        public static readonly Bitmap TITLE01 = Util.LoadBitMapFromFile(
             @"res/title/title01.png",
             PixelFormat.Format32bppPRGBA
         );
     }
 
     public abstract class Button : IDrawable {
-        public abstract void select();
-        public abstract void click();
-        public abstract string getName();
-        public abstract void unselect();
+        public abstract void Select();
+        public abstract void Click();
+        public abstract string GetName();
+        public abstract void Unselect();
 
-        public abstract void draw(RenderTarget renderTarget);
+        public abstract void Draw(RenderTarget renderTarget);
 
-        protected static void getOffset(int selected, out int x, out int y) {
+        protected static void GetOffset(int selected, out int x, out int y) {
             if (selected == 0) {
                 x = y = 0;
                 return;
