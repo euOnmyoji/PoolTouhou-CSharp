@@ -1,7 +1,7 @@
 ﻿using PoolTouhou.UI;
 
 namespace PoolTouhou.GameState {
-    public interface IGameState : IDrawable, IUpdatble {
+    public interface IGameState : IDrawable, IUpdateable {
         string GetStateName();
     }
 }

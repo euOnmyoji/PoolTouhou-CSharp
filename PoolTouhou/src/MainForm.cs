@@ -3,20 +3,18 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using PoolTouhou.GameState;
 using PoolTouhou.Utils;
 using SharpDX.Direct2D1;
-using Timer = System.Threading.Timer;
+using SharpDX.DirectWrite;
+using SharpDX.Mathematics.Interop;
+using Factory = SharpDX.Direct2D1.Factory;
 
 namespace PoolTouhou {
     public class MainForm : Form {
         public static IGameState gameState;
         private volatile bool running = true;
-        private double Fps { get; set; } = 60f;
-        private int PaintCount { get; set; } = 0;
-        private DateTime Last { get; set; } = DateTime.Now;
 
         private Factory D2dFactory { get; set; }
         public RenderTarget RenderTarget { get; private set; }
@@ -47,24 +45,24 @@ namespace PoolTouhou {
         private void UpdateLoop() {
             try {
                 long frequency = Stopwatch.Frequency;
-                if (!Stopwatch.IsHighResolution) {
-                    frequency = 1;
-                }
-                double oneFrameCount = timeInPerFrame * frequency;
+                double oneTickCount = timeInPerFrame * frequency;
                 long lastCount = PoolTouhou.Watch.ElapsedTicks;
-                double nextFrameCount = lastCount + oneFrameCount;
+                double nextFrameCount = lastCount + oneTickCount;
                 while (running) {
                     var input = new InputData();
                     gameState.Update(ref input);
                     input.Step();
                     lastCount = PoolTouhou.Watch.ElapsedTicks;
                     if (lastCount < nextFrameCount) {
-                        Thread.Sleep((int) ((nextFrameCount - lastCount) / frequency));
+                        Thread.Sleep((int) ((nextFrameCount - lastCount) * 1000 / frequency));
                     }
                     while (PoolTouhou.Watch.ElapsedTicks < nextFrameCount) {
                         //waiting for next tick
                     }
-                    nextFrameCount = lastCount + oneFrameCount;
+
+                    if ((nextFrameCount += oneTickCount) > lastCount) {
+                        nextFrameCount = lastCount + oneTickCount;
+                    }
                 }
             } catch (Exception e) {
                 MessageBox.Show(e.Message + Environment.NewLine + e.StackTrace, @"很抱歉出错了！");
@@ -74,9 +72,35 @@ namespace PoolTouhou {
 
         private void DrawLoop() {
             try {
+                double fps = 0;
+                const int updateFpsPaintCount = 60;
+                double k = updateFpsPaintCount * Stopwatch.Frequency;
+                int paintCount = 0;
+                long last = PoolTouhou.Watch.ElapsedTicks;
+                using var brush = new SolidColorBrush(RenderTarget, new RawColor4(100, 100, 100, 1));
+                using var textFactory = new SharpDX.DirectWrite.Factory();
+                const float fontSize = 15;
+                using var textFormat = new TextFormat(textFactory, Font.FontFamily.Name, fontSize);
                 while (running && !RenderTarget.IsDisposed) {
                     RenderTarget.BeginDraw();
                     gameState.Draw(RenderTarget);
+                    if (++paintCount == updateFpsPaintCount) {
+                        paintCount = 0;
+                        long now = PoolTouhou.Watch.ElapsedTicks;
+                        fps = k / (now - last);
+                        last = now;
+                    }
+                    if (fps > 0) {
+                        var size = RenderTarget.Size;
+                        RenderTarget.DrawText(
+                            fps.ToString("00.00fps"),
+                            textFormat,
+                            new RawRectangleF(size.Width - fontSize * 5, size.Height - fontSize, size.Width, size.Height),
+                            brush,
+                            DrawTextOptions.None,
+                            MeasuringMode.Natural
+                        );
+                    }
                     RenderTarget.EndDraw();
                 }
             } catch (Exception e) {
@@ -136,9 +160,6 @@ namespace PoolTouhou {
 
         private void InitializeComponent() {
             SuspendLayout();
-            // 
-            // MainForm
-            // 
             AutoScaleMode = AutoScaleMode.None;
             ClientSize = new Size(1280, 960);
             FormBorderStyle = FormBorderStyle.FixedDialog;

@@ -1,3 +1,4 @@
+using System;
 using SharpDX.Direct2D1;
 using SharpDX.Mathematics.Interop;
 
@@ -7,10 +8,9 @@ namespace PoolTouhou.UI.Buttons {
         private const float dy = 15;
         private static RawRectangleF selectedRf = new RawRectangleF(0, 0, dx, dy);
         private static RawRectangleF unselectedRf = new RawRectangleF(128, 0, 128 + dx, dy);
-        private int selected;
 
-        public GameStartButton(int selected = 9999) {
-            this.selected = selected;
+        public GameStartButton() {
+            selectTime = DateTime.Now.AddSeconds(-10);
         }
 
         public override void Draw(RenderTarget renderTarget) {
@@ -20,15 +20,13 @@ namespace PoolTouhou.UI.Buttons {
             float width = size.Width / 2;
             float height = size.Height / 2;
             ref var mapRf = ref unselectedRf;
-            if (selected > 0) {
-                if (++selected == 1) {
-                    selected = 0;
-                } else {
-                    mapRf = ref selectedRf;
-                }
+            int xOffset = 0;
+            int yOffset = 0;
+            if (selectTime != null) {
+                mapRf = ref selectedRf;
+                GetOffset(DateTime.Now.Subtract((DateTime) selectTime).TotalMilliseconds, out xOffset, out yOffset);
             }
 
-            GetOffset(selected, out int xOffset, out int yOffset);
             renderTarget.DrawBitmap(
                 ButtonsResources.TITLE01,
                 new RawRectangleF(
@@ -43,19 +41,12 @@ namespace PoolTouhou.UI.Buttons {
             );
         }
 
-        public override void Select() {
-            selected = 1;
-        }
-
-        public override void Click() {
+        public override int Click() {
+            return UiEvents.CHOOSE_GAME;
         }
 
         public override string GetName() {
             return "GameStart";
-        }
-
-        public override void Unselect() {
-            selected = 0;
         }
     }
 }

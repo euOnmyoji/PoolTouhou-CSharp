@@ -3,7 +3,7 @@ using PoolTouhou.Manager;
 using PoolTouhou.Utils;
 using SharpDX.Direct2D1;
 
-namespace PoolTouhou.Games {
+namespace PoolTouhou.Games.PoolRush {
     public class PoolRush : IGame {
         public void Draw(RenderTarget renderTarget) {
         }
@@ -18,7 +18,7 @@ namespace PoolTouhou.Games {
         }
 
         public void Exit() {
-            throw new NotImplementedException();
+
         }
     }
 

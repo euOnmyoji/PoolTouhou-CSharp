@@ -1,3 +1,4 @@
+using System;
 using PoolTouhou.Utils;
 using SharpDX.Direct2D1;
 using Bitmap = SharpDX.Direct2D1.Bitmap;
@@ -12,19 +13,25 @@ namespace PoolTouhou.UI.Buttons {
     }
 
     public abstract class Button : IDrawable {
-        public abstract void Select();
-        public abstract void Click();
+        protected DateTime? selectTime;
+
+        public void Select() {
+            selectTime = DateTime.Now;
+        }
+        public abstract int Click();
         public abstract string GetName();
-        public abstract void Unselect();
+
+        public void Unselect() {
+            selectTime = null;
+        }
 
         public abstract void Draw(RenderTarget renderTarget);
 
-        protected static void GetOffset(int selected, out int x, out int y) {
-            if (selected == 0) {
-                x = y = 0;
-                return;
-            }
-            switch (selected / 2) {
+        protected static void GetOffset(double ms, out int x, out int y) {
+            //16.666666666 ms ≈ 1tick
+            //so just using 17 ms
+            int tick = (int)(ms / 34);
+            switch (tick) {
                 case 1:
                 case 7: {
                     x = -1;

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Windows.Forms;
-using PoolTouhou.Manager;
-
 
 namespace PoolTouhou {
     public static class PoolTouhou {

@@ -1,7 +1,7 @@
 using PoolTouhou.Utils;
 
 namespace PoolTouhou.UI {
-    public interface IUpdatble {
+    public interface IUpdateable {
         void Update(ref InputData input);
     }
 }

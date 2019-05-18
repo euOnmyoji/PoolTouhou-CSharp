@@ -1,10 +1,10 @@
+using System;
 using System.Windows.Forms;
 using SharpDX.Direct2D1;
 using SharpDX.Mathematics.Interop;
 
 namespace PoolTouhou.UI.Buttons {
-    public class TitleExitButton : Button {
-        private int selected = -1;
+    public class ExitButton : Button {
         private const float dx = 64;
         private const float dy = 16;
         private static RawRectangleF selectedRf = new RawRectangleF(0, 140, dx, 140 + dy);
@@ -16,14 +16,13 @@ namespace PoolTouhou.UI.Buttons {
             float yScala = size.Height / 480;
             float width = size.Width / 2;
             float height = size.Height / 2;
-            ref var bitmapRf = ref unselectedRf;
-            if (selected > 0) {
-                ++selected;
-                bitmapRf = ref selectedRf;
+            ref var mapRf = ref unselectedRf;
+            int xOffset = 0;
+            int yOffset = 0;
+            if (selectTime != null) {
+                mapRf = ref selectedRf;
+                GetOffset(DateTime.Now.Subtract((DateTime) selectTime).TotalMilliseconds, out xOffset, out yOffset);
             }
-
-            GetOffset(selected, out int xOffset, out int yOffset);
-
 
             renderTarget.DrawBitmap(
                 ButtonsResources.TITLE01,
@@ -35,24 +34,15 @@ namespace PoolTouhou.UI.Buttons {
                 ),
                 1,
                 BitmapInterpolationMode.Linear,
-                bitmapRf
+                mapRf
             );
         }
 
-        public override void Select() {
-            selected = 1;
-        }
-
-        public override void Click() {
+        public override int Click() {
             Application.Exit();
+            return UiEvents.EXIT;
         }
 
-        public override string GetName() {
-            return "TitleExit";
-        }
-
-        public override void Unselect() {
-            selected = -1;
-        }
+        public override string GetName() => "TitleExit";
     }
 }

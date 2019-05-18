@@ -2,30 +2,39 @@
 using System.IO;
 using System.Reflection;
 using System.Threading;
-using System.Windows.Forms;
 using PoolTouhou.UI;
-using PoolTouhou.UI.Buttons;
 using PoolTouhou.Utils;
 using SharpDX.Direct2D1;
 using SharpDX.Mathematics.Interop;
 using static PoolTouhou.Utils.Util;
-using Button = PoolTouhou.UI.Buttons.Button;
 
 namespace PoolTouhou.GameState {
     internal class MenuState : IGameState {
-        private IUi ui = new TitleMenuUi();
+        private readonly IUi[] uis = {new TitleMenuUi(), new GameChooseUi()};
+        private int cur;
 
         public void Draw(RenderTarget target) {
-            ui.Draw(target);
+            uis[cur].Draw(target);
         }
 
         public void Update(ref InputData input) {
-            ui = ui.Update(ref input);
+            int result = uis[cur].Update(ref input);
+            switch (result) {
+                case UiEvents.CHOOSE_GAME: cur = 1;
+                    break;
+                case UiEvents.EXIT: {
+                    if (cur == 1) {
+                        cur = 0;
+                    }
+                    break;
+                }
+                default: {
+                    return;
+                }
+            }
         }
 
-        public string GetStateName() {
-            return @"Menu";
-        }
+        public string GetStateName() => @"Menu";
     }
 
     internal class LoadMenuState : IGameState {

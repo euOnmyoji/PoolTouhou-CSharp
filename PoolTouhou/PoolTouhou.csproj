@@ -58,7 +58,7 @@
     <Compile Include="src\GameObject\ICollideable.cs" />
     <Compile Include="src\GameState\IGameState.cs" />
     <Compile Include="src\GameState\TitleState.cs" />
-    <Compile Include="src\Games\PoolRush.cs" />
+    <Compile Include="src\Games\PoolRush\PoolRush.cs" />
     <Compile Include="src\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -66,14 +66,16 @@
     <Compile Include="src\PoolTouhou.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="src\UI\Buttons\GameStartButton.cs" />
-    <Compile Include="src\UI\Buttons\TitleExitButton.cs" />
-    <Compile Include="src\UI\Buttons\IButton.cs" />
+    <Compile Include="src\UI\Buttons\ExitButton.cs" />
+    <Compile Include="src\UI\Buttons\Button.cs" />
+    <Compile Include="src\UI\GameChooseUi.cs" />
     <Compile Include="src\UI\IDrawable.cs" />
     <Compile Include="src\UI\IUI.cs" />
-    <Compile Include="src\UI\IUpdatble.cs" />
+    <Compile Include="src\UI\IUpdateable.cs" />
     <Compile Include="src\UI\TitleMenuUI.cs" />
     <Compile Include="src\Utils\InputData.cs" />
     <Compile Include="src\Utils\Logger.cs" />
+    <Compile Include="src\Utils\Math.cs" />
     <Compile Include="src\Utils\Util.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
