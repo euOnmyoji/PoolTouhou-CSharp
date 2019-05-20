@@ -9,10 +9,15 @@ using PoolTouhou.Utils;
 using SharpDX.Direct2D1;
 using SharpDX.DirectWrite;
 using SharpDX.Mathematics.Interop;
+using Brush = SharpDX.Direct2D1.Brush;
 using Factory = SharpDX.Direct2D1.Factory;
 
 namespace PoolTouhou {
     public class MainForm : Form {
+        public const float FONT_SIZE = 15;
+        public Brush brush;
+        private SharpDX.DirectWrite.Factory textFactory;
+        public TextFormat textFormat;
         public static IGameState gameState;
         private volatile bool running = true;
 
@@ -32,8 +37,10 @@ namespace PoolTouhou {
             if (disposing) {
                 running = false;
                 components?.Dispose();
-                D2dFactory.Dispose();
-                RenderTarget.Dispose();
+                D2dFactory?.Dispose();
+                RenderTarget?.Dispose();
+                textFactory?.Dispose();
+                textFormat?.Dispose();
             }
 
             base.Dispose(disposing);
@@ -77,10 +84,6 @@ namespace PoolTouhou {
                 double k = updateFpsPaintCount * Stopwatch.Frequency;
                 int paintCount = 0;
                 long last = PoolTouhou.Watch.ElapsedTicks;
-                using var brush = new SolidColorBrush(RenderTarget, new RawColor4(100, 100, 100, 1));
-                using var textFactory = new SharpDX.DirectWrite.Factory();
-                const float fontSize = 15;
-                using var textFormat = new TextFormat(textFactory, Font.FontFamily.Name, fontSize);
                 while (running && !RenderTarget.IsDisposed) {
                     RenderTarget.BeginDraw();
                     gameState.Draw(RenderTarget);
@@ -95,7 +98,12 @@ namespace PoolTouhou {
                         RenderTarget.DrawText(
                             fps.ToString("00.00fps"),
                             textFormat,
-                            new RawRectangleF(size.Width - fontSize * 5, size.Height - fontSize, size.Width, size.Height),
+                            new RawRectangleF(
+                                size.Width - FONT_SIZE * 5,
+                                size.Height - FONT_SIZE,
+                                size.Width,
+                                size.Height
+                            ),
                             brush,
                             DrawTextOptions.None,
                             MeasuringMode.Natural
@@ -134,6 +142,9 @@ namespace PoolTouhou {
                 FeatureLevel.Level_DEFAULT
             );
             RenderTarget = new WindowRenderTarget(D2dFactory, r, h);
+            brush = new SolidColorBrush(RenderTarget, new RawColor4(100, 100, 100, 1));
+            textFactory = new SharpDX.DirectWrite.Factory();
+            textFormat = new TextFormat(textFactory, Font.FontFamily.Name, FONT_SIZE);
             new Thread(
                 () => {
                     gameState = new LoadMenuState();

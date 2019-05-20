@@ -20,6 +20,6 @@ namespace PoolTouhou.Manager {
 
         void Load();
 
-        void Exit();
+        bool IsExit();
     }
 }

@@ -5,26 +5,29 @@ using SharpDX.Direct2D1;
 
 namespace PoolTouhou.Games.PoolRush {
     public class PoolRush : IGame {
+        public string Name => @"PoolRush";
+        public Random Random { get; } = new Random();
+
         public void Draw(RenderTarget renderTarget) {
         }
 
         public void Update(ref InputData input) {
+
         }
 
-        public string Name => @"PoolRush";
-        public Random Random { get; } = new Random();
 
         public void Load() {
+
         }
 
-        public void Exit() {
-
+        public bool IsExit() {
+            return false;
         }
     }
 
     public static class MainClass {
-        public static void OnStarted() {
-
+        public static void OnLoad() {
+            GameManager.Register(new PoolRush());
         }
     }
 }

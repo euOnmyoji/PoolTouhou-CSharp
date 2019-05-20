@@ -2,6 +2,7 @@
 using System.IO;
 using System.Reflection;
 using System.Threading;
+using PoolTouhou.Games.PoolRush;
 using PoolTouhou.UI;
 using PoolTouhou.Utils;
 using SharpDX.Direct2D1;
@@ -61,6 +62,7 @@ namespace PoolTouhou.GameState {
                     if (!dirInfo.Exists) {
                         dirInfo.Create();
                     }
+                    MainClass.OnLoad();
                     foreach (var fileInfo in dirInfo.GetFiles()) {
                         if (fileInfo.Name.EndsWith(".dll")) {
                             Logger.Info($"loading {fileInfo} ");
