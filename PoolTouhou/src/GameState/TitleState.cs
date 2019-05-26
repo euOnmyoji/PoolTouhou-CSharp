@@ -12,7 +12,7 @@ using static PoolTouhou.Utils.Util;
 namespace PoolTouhou.GameState {
     internal class MenuState : IGameState {
         private readonly IUi[] uis = {new TitleMenuUi(), new GameChooseUi()};
-        private int cur;
+        private sbyte cur;
 
         public void Draw(RenderTarget target) {
             uis[cur].Draw(target);

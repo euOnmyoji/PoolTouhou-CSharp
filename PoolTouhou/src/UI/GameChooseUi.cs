@@ -10,7 +10,7 @@ using SharpDX.Mathematics.Interop;
 namespace PoolTouhou.UI {
     public class GameChooseUi : IUi {
         private readonly List<IGame> games;
-        private int cur = 0;
+        private sbyte cur = 0;
         private ushort cd = 0;
 
         public GameChooseUi() {
