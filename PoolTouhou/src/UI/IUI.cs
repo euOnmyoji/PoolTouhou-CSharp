@@ -1,4 +1,3 @@
-using System;
 using PoolTouhou.Utils;
 
 namespace PoolTouhou.UI {
@@ -11,5 +10,6 @@ namespace PoolTouhou.UI {
         public const int FINE = 0;
         public const int CHOOSE_GAME = 1;
         public const int REPLY = 2;
+        public const int SELECTED_GAME = 3;
     }
 }

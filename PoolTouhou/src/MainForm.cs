@@ -19,7 +19,6 @@ namespace PoolTouhou {
         private SharpDX.DirectWrite.Factory textFactory;
         public TextFormat textFormat;
         public static IGameState gameState;
-        private volatile bool running = true;
 
         private Factory D2dFactory { get; set; }
         public RenderTarget RenderTarget { get; private set; }
@@ -35,7 +34,7 @@ namespace PoolTouhou {
         /// <param name="disposing">如果应释放托管资源，为 true；否则为 false。</param>
         protected override void Dispose(bool disposing) {
             if (disposing) {
-                running = false;
+                PoolTouhou.running = false;
                 components?.Dispose();
                 D2dFactory?.Dispose();
                 RenderTarget?.Dispose();
@@ -46,16 +45,16 @@ namespace PoolTouhou {
             base.Dispose(disposing);
         }
 
-        private const double constFps = 60.0;
-        private const double timeInPerFrame = 1.0 / constFps;
+        private const double constTps = 60.0;
+        private const double timeInPerFrame = 1.0 / constTps;
 
-        private void UpdateLoop() {
+        private static void UpdateLoop() {
             try {
                 long frequency = Stopwatch.Frequency;
                 double oneTickCount = timeInPerFrame * frequency;
                 long lastCount = PoolTouhou.Watch.ElapsedTicks;
                 double nextFrameCount = lastCount + oneTickCount;
-                while (running) {
+                while (PoolTouhou.running) {
                     var input = new InputData();
                     gameState.Update(ref input);
                     input.Step();
@@ -84,7 +83,7 @@ namespace PoolTouhou {
                 double k = updateFpsPaintCount * Stopwatch.Frequency;
                 int paintCount = 0;
                 long last = PoolTouhou.Watch.ElapsedTicks;
-                while (running && !RenderTarget.IsDisposed) {
+                while (PoolTouhou.running && !RenderTarget.IsDisposed) {
                     RenderTarget.BeginDraw();
                     gameState.Draw(RenderTarget);
                     if (++paintCount == updateFpsPaintCount) {
@@ -165,7 +164,7 @@ namespace PoolTouhou {
         }
 
         protected override void OnClosing(CancelEventArgs e) {
-            running = false;
+            PoolTouhou.running = false;
             base.OnClosing(e);
         }
 

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Drawing;
 
 namespace PoolTouhou.GameObject {
     public enum CollideableBoxType {
