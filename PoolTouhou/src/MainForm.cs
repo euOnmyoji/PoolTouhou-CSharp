@@ -45,29 +45,36 @@ namespace PoolTouhou {
             base.Dispose(disposing);
         }
 
-        private const double constTps = 60.0;
-        private const double timeInPerFrame = 1.0 / constTps;
+        private static double tps;
 
         private static void UpdateLoop() {
             try {
-                long frequency = Stopwatch.Frequency;
-                double oneTickCount = timeInPerFrame * frequency;
+                ushort tickCount = 0;
+                long last = PoolTouhou.Watch.ElapsedTicks;
                 long lastCount = PoolTouhou.Watch.ElapsedTicks;
-                double nextFrameCount = lastCount + oneTickCount;
+                double nextFrameCount = lastCount + PoolTouhou.OneTickCount;
                 while (PoolTouhou.running) {
+                    ushort goalTps = PoolTouhou.Tps;
                     var input = new InputData();
                     gameState.Update(ref input);
+
+                    if (++tickCount >= goalTps) {
+                        tickCount = 0;
+                        long now = PoolTouhou.Watch.ElapsedTicks;
+                        tps = goalTps * Stopwatch.Frequency / (double) (now - last);
+                        last = now;
+                    }
                     input.Step();
                     lastCount = PoolTouhou.Watch.ElapsedTicks;
                     if (lastCount < nextFrameCount) {
-                        Thread.Sleep((int) ((nextFrameCount - lastCount) * 1000 / frequency));
+                        Thread.Sleep((int) ((nextFrameCount - lastCount) * 1000 / Stopwatch.Frequency));
                     }
                     while (PoolTouhou.Watch.ElapsedTicks < nextFrameCount) {
                         //waiting for next tick
                     }
 
-                    if ((nextFrameCount += oneTickCount) > lastCount) {
-                        nextFrameCount = lastCount + oneTickCount;
+                    if ((nextFrameCount += PoolTouhou.OneTickCount) > lastCount) {
+                        nextFrameCount = lastCount + PoolTouhou.OneTickCount;
                     }
                 }
             } catch (Exception e) {
@@ -92,14 +99,14 @@ namespace PoolTouhou {
                         fps = k / (now - last);
                         last = now;
                     }
-                    if (fps > 0) {
+                    if (tps > 0) {
                         var size = RenderTarget.Size;
                         RenderTarget.DrawText(
-                            fps.ToString("00.00fps"),
+                            tps.ToString("00.00tps"),
                             textFormat,
                             new RawRectangleF(
                                 size.Width - FONT_SIZE * 5,
-                                size.Height - FONT_SIZE,
+                                size.Height - FONT_SIZE * 1.25f,
                                 size.Width,
                                 size.Height
                             ),
