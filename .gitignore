@@ -2,6 +2,7 @@
 .vs
 Debug
 Release
+bin
 obj
 packages
 
@@ -13,3 +14,6 @@ packages
 .jpg
 .png
 .gif
+
+#for logs
+.log

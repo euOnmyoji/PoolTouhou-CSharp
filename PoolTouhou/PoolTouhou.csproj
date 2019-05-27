@@ -106,6 +106,7 @@
     <Content Include="res\**\*.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="src\Games\PoolRush\PoolRush.md" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
