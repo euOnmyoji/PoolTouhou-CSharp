@@ -15,6 +15,9 @@ namespace PoolTouhou.GameState {
 
         public void Update(ref InputData input) {
             game.Update(ref input);
+            if (game.IsExit()) {
+                MainForm.gameState = new MenuState();
+            }
         }
 
         public string GetStateName() => "Gaming";

@@ -9,6 +9,7 @@ namespace PoolTouhou.Games.PoolRush {
         public Random Random { get; } = new Random();
 
         public void Draw(RenderTarget renderTarget) {
+            renderTarget.Clear(null);
         }
 
         public void Update(ref InputData input) {
@@ -21,7 +22,7 @@ namespace PoolTouhou.Games.PoolRush {
         }
 
         public bool IsExit() {
-            return false;
+            return true;
         }
     }
 

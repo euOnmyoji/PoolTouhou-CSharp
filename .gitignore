@@ -16,4 +16,4 @@ packages
 .gif
 
 #for logs
-.log
+*.log

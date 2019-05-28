@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.IO;
-using System.Windows.Forms;
 using PoolTouhou.GameState;
 using PoolTouhou.Manager;
 using PoolTouhou.Utils;
@@ -11,11 +9,9 @@ namespace PoolTouhou.UI {
     public class GameChooseUi : IUi {
         private readonly List<IGame> games;
         private sbyte cur = 0;
-        private ushort cd = 0;
 
         public GameChooseUi() {
             games = new List<IGame>(GameManager.RegisteredGames.Values);
-            cd = 0;
         }
 
         public void Draw(RenderTarget renderTarget) {
@@ -38,15 +34,9 @@ namespace PoolTouhou.UI {
         }
 
         public int Update(ref InputData input) {
-            ++cd;
             if (input.Spell > 0) {
                 return UiEvents.EXIT;
-            } else if (input.Shoot > 0 && cd > 30) {
-                cd = 0;
-                InputData.KEY_PRESSED.Remove('Z');
-                MessageBox.Show(@"没写！");
-                return UiEvents.FINE;
-
+            } else if (input.Shoot == 1 ) {
                 MainForm.gameState = new GamingState(games[cur]);
                 return UiEvents.SELECTED_GAME;
             }

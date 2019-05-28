@@ -73,7 +73,7 @@ namespace PoolTouhou {
                         //waiting for next tick
                     }
 
-                    if ((nextFrameCount += PoolTouhou.OneTickCount) > lastCount) {
+                    if ((nextFrameCount += PoolTouhou.OneTickCount) < lastCount) {
                         nextFrameCount = lastCount + PoolTouhou.OneTickCount;
                     }
                 }
@@ -99,16 +99,33 @@ namespace PoolTouhou {
                         fps = k / (now - last);
                         last = now;
                     }
-                    if (tps > 0) {
+                    if (tps > 0 && fps > 0) {
                         var size = RenderTarget.Size;
+                        string tpsStr = $"{tps:F2}tps";
+                        string fpsStr = $"{fps:F2}fps";
+                        const float textHeight = FONT_SIZE * 1.25f;
+                        float lnLocationY = size.Height - textHeight;
                         RenderTarget.DrawText(
-                            tps.ToString("00.00tps"),
+                            fpsStr,
                             textFormat,
                             new RawRectangleF(
-                                size.Width - FONT_SIZE * 5,
-                                size.Height - FONT_SIZE * 1.25f,
+                                size.Width - FONT_SIZE * fpsStr.Length / 2,
+                                lnLocationY,
                                 size.Width,
                                 size.Height
+                            ),
+                            brush,
+                            DrawTextOptions.None,
+                            MeasuringMode.Natural
+                        );
+                        RenderTarget.DrawText(
+                            tpsStr,
+                            textFormat,
+                            new RawRectangleF(
+                                size.Width - FONT_SIZE * tpsStr.Length / 2,
+                                size.Height - textHeight * 1.75f,
+                                size.Width,
+                                lnLocationY
                             ),
                             brush,
                             DrawTextOptions.None,
