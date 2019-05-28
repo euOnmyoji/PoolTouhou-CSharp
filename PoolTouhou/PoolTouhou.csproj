@@ -80,6 +80,7 @@
     <Compile Include="src\UI\IUpdateable.cs" />
     <Compile Include="src\UI\TitleMenuUI.cs" />
     <Compile Include="src\Utils\InputData.cs" />
+    <Compile Include="src\Utils\LinkedList.cs" />
     <Compile Include="src\Utils\Logger.cs" />
     <Compile Include="src\Utils\Math.cs" />
     <Compile Include="src\Utils\Util.cs" />
