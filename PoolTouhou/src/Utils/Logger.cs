@@ -14,6 +14,7 @@ namespace PoolTouhou.Utils {
             using var writer = new FileStream("log.log", FileMode.Append);
             using var stream = new StreamWriter(writer);
             await stream.WriteLineAsync($"{DateTime.Now} {msg}");
+            stream.Flush();
         }
     }
 }

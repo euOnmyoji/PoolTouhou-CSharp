@@ -10,10 +10,12 @@ packages
 .idea
 
 
-#for art
-.jpg
-.png
-.gif
+#for art & sound
+*.jpg
+*.png
+*.gif
+*.wav
+*.mp3
 
 #for logs
 *.log

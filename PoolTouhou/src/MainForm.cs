@@ -78,6 +78,7 @@ namespace PoolTouhou {
                     }
                 }
             } catch (Exception e) {
+                Logger.Info(e.Message + Environment.NewLine + e.StackTrace);
                 MessageBox.Show(e.Message + Environment.NewLine + e.StackTrace, @"很抱歉出错了！");
                 Application.Exit();
             }
@@ -135,6 +136,7 @@ namespace PoolTouhou {
                     RenderTarget.EndDraw();
                 }
             } catch (Exception e) {
+                Logger.Info(e.Message + Environment.NewLine + e.StackTrace);
                 MessageBox.Show(e.Message + Environment.NewLine + e.StackTrace, @"很抱歉出错了！");
                 Application.Exit();
             }

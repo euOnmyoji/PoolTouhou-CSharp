@@ -14,11 +14,16 @@ namespace PoolTouhou.GameState {
         private readonly IUi[] uis = {new TitleMenuUi(), new GameChooseUi()};
         private sbyte cur;
 
+        public MenuState() {
+            PoolTouhou.SoundManager.TryLoad("title", @"res/bgm/test.wav");
+        }
+
         public void Draw(RenderTarget target) {
             uis[cur].Draw(target);
         }
 
         public void Update(ref InputData input) {
+            PoolTouhou.SoundManager.TryLoop("title");
             int result = uis[cur].Update(ref input);
             switch (result) {
                 case UiEvents.CHOOSE_GAME: cur = 1;
@@ -50,9 +55,8 @@ namespace PoolTouhou.GameState {
         );
 
         private bool startLoading;
-        private readonly DateTime start = DateTime.Now;
-
         private MenuState menuState;
+        private readonly DateTime start = DateTime.Now;
 
         public LoadMenuState() {
             new Thread(
@@ -134,6 +138,7 @@ namespace PoolTouhou.GameState {
         public void Update(ref InputData input) {
             if (startLoading && menuState != null) {
                 MainForm.gameState = menuState;
+                menuState = null;
             }
         }
 

@@ -13,7 +13,7 @@ namespace PoolTouhou.Manager {
         public static Dictionary<string, IGame> RegisteredGames => new Dictionary<string, IGame>(dictionary);
     }
 
-    public interface IGame : IDrawable, IUpdateable {
+    public interface IGame : IDrawable, IUpdateable, IDisposable {
         string Name { get; }
 
         Random Random { get; }

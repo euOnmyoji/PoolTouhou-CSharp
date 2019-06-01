@@ -18,11 +18,16 @@ namespace PoolTouhou.Games.PoolRush {
 
 
         public void Load() {
-
+            PoolTouhou.SoundManager.Load("bgmtest", @"res/bgm/th06_05.wav");
+            PoolTouhou.SoundManager.Loop("bgmtest");
         }
 
         public bool IsExit() {
             return true;
+        }
+
+        public void Dispose() {
+            PoolTouhou.SoundManager.Unload("bgmtest");
         }
     }
 

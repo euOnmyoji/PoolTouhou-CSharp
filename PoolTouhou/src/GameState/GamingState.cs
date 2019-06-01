@@ -8,7 +8,9 @@ namespace PoolTouhou.GameState {
 
         public GamingState(IGame game) {
             this.game = game;
+            game.Load();
         }
+
         public void Draw(RenderTarget renderTarget) {
             game.Draw(renderTarget);
         }
@@ -16,6 +18,7 @@ namespace PoolTouhou.GameState {
         public void Update(ref InputData input) {
             game.Update(ref input);
             if (game.IsExit()) {
+                game.Dispose();
                 MainForm.gameState = new MenuState();
             }
         }
