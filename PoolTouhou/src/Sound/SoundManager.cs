@@ -13,7 +13,7 @@ namespace PoolTouhou.Sound {
     public sealed class SoundManager : IDisposable {
         internal readonly XAudio2 xAudio2;
         private readonly MasteringVoice masteringVoice;
-        private readonly Dictionary<string, SoundData> voices = new Dictionary<string, SoundData>();
+        private Dictionary<string, SoundData> voices = new Dictionary<string, SoundData>();
 
         public delegate SoundData GetSoundData(FileStream fs);
 
@@ -23,8 +23,13 @@ namespace PoolTouhou.Sound {
         }
 
         public void Dispose() {
-            xAudio2?.Dispose();
+            var voices = this.voices;
+            this.voices = null;
+            foreach (var data in voices.Values) {
+                data.Dispose();
+            }
             masteringVoice?.Dispose();
+            xAudio2?.Dispose();
         }
 
         public void Load(string name, string path, GetSoundData toSoundData = null) {
@@ -54,10 +59,12 @@ namespace PoolTouhou.Sound {
             return true;
         }
 
-        public void Unload(string name, int set = 0) {
-            var voice = voices[name];
-            voices.Remove(name);
-            voice.voice.Stop(set);
+        public void Unload(string name) {
+            var voice = voices?[name] ;
+            if (voice != null) {
+                voices.Remove(name);
+                voice.Value.Dispose();
+            }
         }
 
         public void PlayOnce(string name, int set = 0) {
@@ -72,10 +79,7 @@ namespace PoolTouhou.Sound {
             var overVoice = new SourceVoice(xAudio2, data.format);
             overVoice.SubmitSourceBuffer(data.buffer, data.decodedPacketsInfo);
             overVoice.SetVolume(0.125f);
-            overVoice.BufferEnd += _ => {
-                overVoice.DestroyVoice();
-                overVoice.Dispose();
-            };
+            overVoice.BufferEnd += ptr => overVoice.DestroyVoice();
             overVoice.Start(set);
         }
 
@@ -108,7 +112,7 @@ namespace PoolTouhou.Sound {
         public bool looping;
 
         public void Dispose() {
-            voice?.Dispose();
+            voice?.DestroyVoice();
         }
     }
 

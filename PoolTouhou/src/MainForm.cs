@@ -102,8 +102,8 @@ namespace PoolTouhou {
                     }
                     if (tps > 0 && fps > 0) {
                         var size = RenderTarget.Size;
-                        string tpsStr = $"{tps:F2}tps";
-                        string fpsStr = $"{fps:F2}fps";
+                        string tpsStr = $"{tps:F1}tps";
+                        string fpsStr = $"{fps:F1}fps";
                         const float textHeight = FONT_SIZE * 1.25f;
                         float lnLocationY = size.Height - textHeight;
                         RenderTarget.DrawText(

@@ -19,7 +19,7 @@ namespace PoolTouhou.GameState {
         public MenuState() {
             PoolTouhou.SoundManager.TryLoad(
                 "title",
-                @"I:\Projects\CSharp\PoolTouhou\PoolTouhou\res\bgm\上海アリス幻樂団 - 桜舞い散る天空.mp3",
+                @"res\bgm\上海アリス幻樂団 - 桜舞い散る天空.mp3",
                 GetSoundStreamMethods.GetMp3SoundStream
             );
         }
