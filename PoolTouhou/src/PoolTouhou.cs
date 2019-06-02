@@ -43,7 +43,7 @@ namespace PoolTouhou {
             GC.Collect();
             Application.Run(MainForm);
             Dispose();
-            Logger.Info("回收资源 关闭游戏完成");
+            Logger.Info("回收资源 退出主线程");
             return 0;
         }
 

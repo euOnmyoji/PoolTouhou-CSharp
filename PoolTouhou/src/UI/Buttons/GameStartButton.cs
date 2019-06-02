@@ -28,7 +28,7 @@ namespace PoolTouhou.UI.Buttons {
             }
 
             renderTarget.DrawBitmap(
-                ButtonsResources.TITLE01,
+                ButtonsResources.INSTANCE.title01,
                 new RawRectangleF(
                     width + 10 * xScala + xOffset,
                     height + 63 * yScala + yOffset,

@@ -1,15 +1,30 @@
 using System;
+using PoolTouhou.Sound;
 using PoolTouhou.Utils;
 using SharpDX.Direct2D1;
 using Bitmap = SharpDX.Direct2D1.Bitmap;
 using PixelFormat = SharpDX.WIC.PixelFormat;
 
 namespace PoolTouhou.UI.Buttons {
-    public static class ButtonsResources {
-        public static readonly Bitmap TITLE01 = Util.LoadBitMapFromFile(
+    public class ButtonsResources {
+        public static readonly ButtonsResources INSTANCE = new ButtonsResources();
+
+        public readonly Bitmap title01 = Util.LoadBitMapFromFile(
             @"res/title/title01.png",
             PixelFormat.Format32bppPRGBA
         );
+
+        private ButtonsResources() {
+            Logger.Info("加载按钮资源");
+            PoolTouhou.SoundManager.Load(@"selectButton", @"res/SE/se_select00.mp3", GetSoundStreamMethods.GetMp3SoundStream);
+            Logger.Info("加载结束");
+        }
+
+        ~ButtonsResources() {
+            Logger.Info("释放按钮资源");
+            title01.Dispose();
+            PoolTouhou.SoundManager.Unload(@"selectButton");
+        }
     }
 
     public abstract class Button : IDrawable {
@@ -17,7 +32,9 @@ namespace PoolTouhou.UI.Buttons {
 
         public void Select() {
             selectTime = DateTime.Now;
+            PoolTouhou.SoundManager.Overplay(@"selectButton");
         }
+
         public abstract int Click();
         public abstract string GetName();
 
@@ -30,7 +47,7 @@ namespace PoolTouhou.UI.Buttons {
         protected static void GetOffset(double ms, out int x, out int y) {
             //16.666666666 ms ≈ 1tick
             //so just using 17 ms
-            int tick = (int)(ms / 34);
+            int tick = (int) (ms / 34);
             switch (tick) {
                 case 1:
                 case 7: {

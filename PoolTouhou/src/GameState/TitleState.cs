@@ -3,7 +3,9 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 using PoolTouhou.Games.PoolRush;
+using PoolTouhou.Sound;
 using PoolTouhou.UI;
+using PoolTouhou.UI.Buttons;
 using PoolTouhou.Utils;
 using SharpDX.Direct2D1;
 using SharpDX.Mathematics.Interop;
@@ -15,7 +17,11 @@ namespace PoolTouhou.GameState {
         private sbyte cur;
 
         public MenuState() {
-            PoolTouhou.SoundManager.TryLoad("title", @"res/bgm/test.wav");
+            PoolTouhou.SoundManager.TryLoad(
+                "title",
+                @"I:\Projects\CSharp\PoolTouhou\PoolTouhou\res\bgm\上海アリス幻樂団 - 桜舞い散る天空.mp3",
+                GetSoundStreamMethods.GetMp3SoundStream
+            );
         }
 
         public void Draw(RenderTarget target) {
@@ -26,7 +32,8 @@ namespace PoolTouhou.GameState {
             PoolTouhou.SoundManager.TryLoop("title");
             int result = uis[cur].Update(ref input);
             switch (result) {
-                case UiEvents.CHOOSE_GAME: cur = 1;
+                case UiEvents.CHOOSE_GAME:
+                    cur = 1;
                     break;
                 case UiEvents.EXIT: {
                     if (cur == 1) {
@@ -61,20 +68,27 @@ namespace PoolTouhou.GameState {
         public LoadMenuState() {
             new Thread(
                 () => {
-                    var dirInfo = new DirectoryInfo(".\\games");
+                    try {
+                        var dirInfo = new DirectoryInfo(".\\games");
 
-                    if (!dirInfo.Exists) {
-                        dirInfo.Create();
-                    }
-                    MainClass.OnLoad();
-                    foreach (var fileInfo in dirInfo.GetFiles()) {
-                        if (fileInfo.Name.EndsWith(".dll")) {
-                            Logger.Info($"loading {fileInfo} ");
-                            var asm = Assembly.LoadFile(fileInfo.FullName);
-                            var type = asm.GetType($"{fileInfo.Name.Substring(0, fileInfo.Name.Length - 4)}.MainClass");
+                        if (!dirInfo.Exists) {
+                            dirInfo.Create();
                         }
+                        MainClass.OnLoad();
+                        foreach (var fileInfo in dirInfo.GetFiles()) {
+                            if (fileInfo.Name.EndsWith(".dll")) {
+                                Logger.Info($"loading {fileInfo} ");
+                                var asm = Assembly.LoadFile(fileInfo.FullName);
+                                var type = asm.GetType(
+                                    $"{fileInfo.Name.Substring(0, fileInfo.Name.Length - 4)}.MainClass"
+                                );
+                            }
+                        }
+                        menuState = new MenuState();
+                    } catch (Exception e) {
+                        Logger.Info(e.Message + Environment.NewLine + e.StackTrace);
+                        throw;
                     }
-                    menuState = new MenuState();
                 }
             ).Start();
         }
