@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace PoolTouhou.Utils {
     public static class Logger {
-        private static readonly Queue<string> msgQueue = new Queue<string>();
 
         static Logger() {
             File.Delete("log.log");
@@ -14,6 +12,20 @@ namespace PoolTouhou.Utils {
             using var writer = new FileStream("log.log", FileMode.Append);
             using var stream = new StreamWriter(writer);
             await stream.WriteLineAsync($"{DateTime.Now} {msg}");
+            stream.Flush();
+        }
+
+        public static async void MemoryLack(string msg) {
+            using var writer = new FileStream("log.log", FileMode.Append);
+            using var stream = new StreamWriter(writer);
+            await stream.WriteLineAsync($"{DateTime.Now} {msg}");
+            stream.Flush();
+        }
+
+        public static async void LogException(Exception e) {
+            using var writer = new FileStream("log.log", FileMode.Append);
+            using var stream = new StreamWriter(writer);
+            await stream.WriteLineAsync($"{DateTime.Now} {e.Message + Environment.NewLine + e.StackTrace}");
             stream.Flush();
         }
     }

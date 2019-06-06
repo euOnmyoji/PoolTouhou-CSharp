@@ -9,24 +9,17 @@ using PoolTouhou.Utils;
 using SharpDX.Direct2D1;
 using SharpDX.DirectWrite;
 using SharpDX.Mathematics.Interop;
+using static PoolTouhou.PoolTouhou;
 using Brush = SharpDX.Direct2D1.Brush;
-using Factory = SharpDX.Direct2D1.Factory;
 
 namespace PoolTouhou {
-    public class MainForm : Form {
+    public sealed class MainForm : Form {
         public const float FONT_SIZE = 15;
         public Brush brush;
         private SharpDX.DirectWrite.Factory textFactory;
         public TextFormat textFormat;
         public static IGameState gameState;
 
-        private Factory D2dFactory { get; set; }
-        public RenderTarget RenderTarget { get; private set; }
-
-        /// <summary>
-        /// 必需的设计器变量。
-        /// </summary>
-        private IContainer components;
 
         /// <summary>
         /// 清理所有正在使用的资源。
@@ -34,12 +27,10 @@ namespace PoolTouhou {
         /// <param name="disposing">如果应释放托管资源，为 true；否则为 false。</param>
         protected override void Dispose(bool disposing) {
             if (disposing) {
-                PoolTouhou.running = false;
-                components?.Dispose();
-                D2dFactory?.Dispose();
-                RenderTarget?.Dispose();
+                running = false;
                 textFactory?.Dispose();
                 textFormat?.Dispose();
+                brush?.Dispose();
             }
 
             base.Dispose(disposing);
@@ -50,31 +41,31 @@ namespace PoolTouhou {
         private static void UpdateLoop() {
             try {
                 ushort tickCount = 0;
-                long last = PoolTouhou.Watch.ElapsedTicks;
-                long lastCount = PoolTouhou.Watch.ElapsedTicks;
-                double nextFrameCount = lastCount + PoolTouhou.OneTickCount;
-                while (PoolTouhou.running) {
-                    ushort goalTps = PoolTouhou.Tps;
+                long last = Watch.ElapsedTicks;
+                long lastCount = Watch.ElapsedTicks;
+                double nextFrameCount = lastCount + OneTickCount;
+                while (running) {
+                    ushort goalTps = Tps;
                     var input = new InputData();
                     gameState.Update(ref input);
 
                     if (++tickCount >= goalTps) {
                         tickCount = 0;
-                        long now = PoolTouhou.Watch.ElapsedTicks;
+                        long now = Watch.ElapsedTicks;
                         tps = goalTps * Stopwatch.Frequency / (double) (now - last);
                         last = now;
                     }
                     input.Step();
-                    lastCount = PoolTouhou.Watch.ElapsedTicks;
+                    lastCount = Watch.ElapsedTicks;
                     if (lastCount < nextFrameCount) {
                         Thread.Sleep((int) ((nextFrameCount - lastCount) * 1000 / Stopwatch.Frequency));
                     }
-                    while (PoolTouhou.Watch.ElapsedTicks < nextFrameCount) {
+                    while (Watch.ElapsedTicks < nextFrameCount) {
                         //waiting for next tick
                     }
 
-                    if ((nextFrameCount += PoolTouhou.OneTickCount) < lastCount) {
-                        nextFrameCount = lastCount + PoolTouhou.OneTickCount;
+                    if ((nextFrameCount += OneTickCount) < lastCount) {
+                        nextFrameCount = lastCount + OneTickCount;
                     }
                 }
             } catch (Exception e) {
@@ -90,23 +81,24 @@ namespace PoolTouhou {
                 const int updateFpsPaintCount = 60;
                 double k = updateFpsPaintCount * Stopwatch.Frequency;
                 int paintCount = 0;
-                long last = PoolTouhou.Watch.ElapsedTicks;
-                while (PoolTouhou.running && !RenderTarget.IsDisposed) {
-                    RenderTarget.BeginDraw();
-                    gameState.Draw(RenderTarget);
+                long last = Watch.ElapsedTicks;
+                while (running && !DirectXResource.RenderTarget.IsDisposed) {
+                    var renderTarget = DirectXResource.RenderTarget;
+                    renderTarget.BeginDraw();
+                    gameState.Draw(renderTarget);
                     if (++paintCount == updateFpsPaintCount) {
                         paintCount = 0;
-                        long now = PoolTouhou.Watch.ElapsedTicks;
+                        long now = Watch.ElapsedTicks;
                         fps = k / (now - last);
                         last = now;
                     }
                     if (tps > 0 && fps > 0) {
-                        var size = RenderTarget.Size;
+                        var size = renderTarget.Size;
                         string tpsStr = $"{tps:F1}tps";
                         string fpsStr = $"{fps:F1}fps";
                         const float textHeight = FONT_SIZE * 1.25f;
                         float lnLocationY = size.Height - textHeight;
-                        RenderTarget.DrawText(
+                        renderTarget.DrawText(
                             fpsStr,
                             textFormat,
                             new RawRectangleF(
@@ -119,7 +111,7 @@ namespace PoolTouhou {
                             DrawTextOptions.None,
                             MeasuringMode.Natural
                         );
-                        RenderTarget.DrawText(
+                        renderTarget.DrawText(
                             tpsStr,
                             textFormat,
                             new RawRectangleF(
@@ -133,7 +125,7 @@ namespace PoolTouhou {
                             MeasuringMode.Natural
                         );
                     }
-                    RenderTarget.EndDraw();
+                    renderTarget.EndDraw();
                 }
             } catch (Exception e) {
                 Logger.Info(e.Message + Environment.NewLine + e.StackTrace);
@@ -143,40 +135,31 @@ namespace PoolTouhou {
         }
 
         public void Init() {
-            InitializeComponent();
-            components = new Container();
+            brush = new SolidColorBrush(DirectXResource.RenderTarget, new RawColor4(100, 100, 100, 1));
+            textFactory = new SharpDX.DirectWrite.Factory();
+            textFormat = new TextFormat(textFactory, Font.FontFamily.Name, FONT_SIZE);
+            new Thread(
+                () => {
+                    gameState = new LoadingMenuState();
+                    new Thread(DrawLoop).Start();
+                    UpdateLoop();
+                }
+            ).Start();
+        }
+
+        public MainForm() {
+            SuspendLayout();
+            AutoScaleMode = AutoScaleMode.None;
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
+            Name = @"MainForm";
+            ResumeLayout(false);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1600, 900);
             Size = new Size(1600, 900);
             SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);
             BackColor = Color.Black;
             Text = @"PoolTouhou";
-
-            D2dFactory = new Factory();
-            var p = new PixelFormat();
-            var h = new HwndRenderTargetProperties {
-                Hwnd = Handle, PixelSize = new SharpDX.Size2(Width, Height), PresentOptions = PresentOptions.None
-            };
-
-            var r = new RenderTargetProperties(
-                RenderTargetType.Hardware,
-                p,
-                0,
-                0,
-                RenderTargetUsage.None,
-                FeatureLevel.Level_DEFAULT
-            );
-            RenderTarget = new WindowRenderTarget(D2dFactory, r, h);
-            brush = new SolidColorBrush(RenderTarget, new RawColor4(100, 100, 100, 1));
-            textFactory = new SharpDX.DirectWrite.Factory();
-            textFormat = new TextFormat(textFactory, Font.FontFamily.Name, FONT_SIZE);
-            new Thread(
-                () => {
-                    gameState = new LoadMenuState();
-                    new Thread(DrawLoop).Start();
-                    UpdateLoop();
-                }
-            ).Start();
         }
 
         protected override void OnKeyDown(KeyEventArgs e) {
@@ -190,18 +173,8 @@ namespace PoolTouhou {
         }
 
         protected override void OnClosing(CancelEventArgs e) {
-            PoolTouhou.running = false;
+            running = false;
             base.OnClosing(e);
-        }
-
-        private void InitializeComponent() {
-            SuspendLayout();
-            AutoScaleMode = AutoScaleMode.None;
-            ClientSize = new Size(1280, 960);
-            FormBorderStyle = FormBorderStyle.FixedDialog;
-            MaximizeBox = false;
-            Name = @"MainForm";
-            ResumeLayout(false);
         }
     }
 }

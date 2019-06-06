@@ -5,6 +5,7 @@ using SharpDX.Direct2D1;
 
 namespace PoolTouhou.Games.PoolRush {
     public class PoolRush : IGame {
+        private bool exit;
         public string Name => @"PoolRush";
         public Random Random { get; } = new Random();
 
@@ -13,7 +14,9 @@ namespace PoolTouhou.Games.PoolRush {
         }
 
         public void Update(ref InputData input) {
-
+            if (input.Spell == 1) {
+                exit = true;
+            }
         }
 
 
@@ -22,11 +25,10 @@ namespace PoolTouhou.Games.PoolRush {
             PoolTouhou.SoundManager.Loop("bgmtest");
         }
 
-        public bool IsExit() {
-            return true;
-        }
+        public bool IsExit() => exit;
 
         public void Dispose() {
+            exit = false;
             PoolTouhou.SoundManager.Unload("bgmtest");
         }
     }

@@ -5,7 +5,6 @@ using System.Threading;
 using PoolTouhou.Games.PoolRush;
 using PoolTouhou.Sound;
 using PoolTouhou.UI;
-using PoolTouhou.UI.Buttons;
 using PoolTouhou.Utils;
 using SharpDX.Direct2D1;
 using SharpDX.Mathematics.Interop;
@@ -29,7 +28,7 @@ namespace PoolTouhou.GameState {
         }
 
         public void Update(ref InputData input) {
-            PoolTouhou.SoundManager.TryLoop("title");
+            PoolTouhou.SoundManager.Loop("title");
             int result = uis[cur].Update(ref input);
             switch (result) {
                 case UiEvents.CHOOSE_GAME:
@@ -50,7 +49,7 @@ namespace PoolTouhou.GameState {
         public string GetStateName() => @"Menu";
     }
 
-    internal class LoadMenuState : IGameState {
+    internal class LoadingMenuState : IGameState {
         private readonly Bitmap loadingMap = LoadBitMapFromFile(
             "res/ascii/loading.png",
             SharpDX.WIC.PixelFormat.Format32bppPRGBA
@@ -65,7 +64,7 @@ namespace PoolTouhou.GameState {
         private MenuState menuState;
         private readonly DateTime start = DateTime.Now;
 
-        public LoadMenuState() {
+        public LoadingMenuState() {
             new Thread(
                 () => {
                     try {
@@ -93,7 +92,7 @@ namespace PoolTouhou.GameState {
             ).Start();
         }
 
-        ~LoadMenuState() {
+        ~LoadingMenuState() {
             loadingMap.Dispose();
             background.Dispose();
         }

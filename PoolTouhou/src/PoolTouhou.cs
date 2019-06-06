@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Windows.Forms;
+using PoolTouhou.Device;
 using PoolTouhou.Sound;
 using PoolTouhou.Utils;
 
 namespace PoolTouhou {
     public static class PoolTouhou {
         public static MainForm MainForm { get; private set; }
+        public static DirectXResource DirectXResource { get; private set; }
 
         public static ushort Tps {
             get => tps;
@@ -29,9 +31,6 @@ namespace PoolTouhou {
         public static int Main(string[] args) {
             Watch.Start();
             try {
-                Logger.Info("开始实例化游戏窗口类");
-                MainForm = new MainForm();
-                Logger.Info("开始初始化游戏");
                 Init();
             } catch (Exception e) {
                 Logger.Info(e.Message + Environment.NewLine + e.StackTrace);
@@ -51,13 +50,20 @@ namespace PoolTouhou {
         public static double OneTickCount { get; private set; } = (double) Stopwatch.Frequency / tps;
 
         private static void Init() {
+            Logger.Info("开始实例化游戏窗口类");
+            MainForm = new MainForm();
+            Logger.Info("初始化图形资源");
+            DirectXResource = new DirectXResource();
+            Logger.Info("初始化音频资源");
             SoundManager = new SoundManager();
+            Logger.Info("初始化游戏");
             MainForm.Init();
         }
 
         private static void Dispose() {
             MainForm?.Dispose();
             SoundManager?.Dispose();
+            DirectXResource?.Dispose();
         }
     }
 }

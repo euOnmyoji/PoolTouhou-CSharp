@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="src\Bullets\IBullet.cs" />
+    <Compile Include="src\Device\DirectXResource.cs" />
     <Compile Include="src\GameObject\ICollidable.cs" />
     <Compile Include="src\GameObject\ILocateable.cs" />
     <Compile Include="src\GameObject\Player\IPlayer.cs" />
@@ -122,6 +123,7 @@
     <PackageReference Include="NAudio" Version="1.9.0" />
     <PackageReference Include="SharpDX" Version="4.2.0" />
     <PackageReference Include="SharpDX.Direct2D1" Version="4.2.0" />
+    <PackageReference Include="SharpDX.Direct3D11" Version="4.2.0" />
     <PackageReference Include="SharpDX.DirectInput" Version="4.2.0" />
     <PackageReference Include="SharpDX.DXGI" Version="4.2.0" />
     <PackageReference Include="SharpDX.XAudio2" Version="4.2.0" />

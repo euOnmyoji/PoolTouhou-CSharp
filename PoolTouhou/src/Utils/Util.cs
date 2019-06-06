@@ -14,11 +14,11 @@ namespace PoolTouhou.Utils {
             var convert = new FormatConverter(imageFactory);
             convert.Initialize(firstFrame, guid, BitmapDitherType.None, null, 0.0, BitmapPaletteType.Custom);
 
-            var map = SharpDX.Direct2D1.Bitmap.FromWicBitmap(PoolTouhou.MainForm.RenderTarget, convert);
+            var map = SharpDX.Direct2D1.Bitmap.FromWicBitmap(PoolTouhou.DirectXResource.RenderTarget, convert);
 
+            imageFactory.Dispose();
             decoder.Dispose();
             firstFrame.Dispose();
-            imageFactory.Dispose();
             convert.Dispose();
             return map;
         }

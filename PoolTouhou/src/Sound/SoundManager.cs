@@ -60,7 +60,7 @@ namespace PoolTouhou.Sound {
         }
 
         public void Unload(string name) {
-            var voice = voices?[name] ;
+            var voice = voices?[name];
             if (voice != null) {
                 voices.Remove(name);
                 voice.Value.Dispose();
@@ -76,7 +76,7 @@ namespace PoolTouhou.Sound {
 
         public void Overplay(string name, int set = 0) {
             var data = voices[name];
-            var overVoice = new SourceVoice(xAudio2, data.format);
+            var overVoice = new SourceVoice(xAudio2, data.format, false);
             overVoice.SubmitSourceBuffer(data.buffer, data.decodedPacketsInfo);
             overVoice.SetVolume(0.125f);
             overVoice.BufferEnd += ptr => overVoice.DestroyVoice();
@@ -84,22 +84,14 @@ namespace PoolTouhou.Sound {
         }
 
         public void Loop(string name, int count = XAudio2.MaximumLoopCount) {
-            var data = voices[name];
-            data.buffer.LoopCount = count;
-            data.voice.FlushSourceBuffers();
-            data.voice.SubmitSourceBuffer(data.buffer, data.decodedPacketsInfo);
-            data.voice.Start();
-            data.looping = true;
-        }
-
-        public void TryLoop(string name) {
-            var data = voices[name];
-            if (!data.looping) {
-                data.buffer.LoopCount = XAudio2.MaximumLoopCount;
+            try {
+                var data = voices[name];
+                data.buffer.LoopCount = count;
                 data.voice.FlushSourceBuffers();
                 data.voice.SubmitSourceBuffer(data.buffer, data.decodedPacketsInfo);
                 data.voice.Start();
-                data.looping = true;
+            } catch (Exception e) {
+                Logger.LogException(e);
             }
         }
     }
@@ -109,10 +101,13 @@ namespace PoolTouhou.Sound {
         public SourceVoice voice;
         public WaveFormat format;
         public uint[] decodedPacketsInfo;
-        public bool looping;
 
         public void Dispose() {
             voice?.DestroyVoice();
+            voice?.Dispose();
+            buffer?.Stream?.Dispose();
+            voice = null;
+            buffer = null;
         }
     }
 
@@ -120,10 +115,9 @@ namespace PoolTouhou.Sound {
         public static SoundData GetWavSoundStream(FileStream fs) {
             var ss = new SoundStream(fs);
             return new SoundData {
-                voice = new SourceVoice(PoolTouhou.SoundManager.xAudio2, ss.Format),
+                voice = new SourceVoice(PoolTouhou.SoundManager.xAudio2, ss.Format, false),
                 buffer = new AudioBuffer(ss),
                 decodedPacketsInfo = ss.DecodedPacketsInfo,
-                looping = false
             };
         }
 
@@ -146,10 +140,9 @@ namespace PoolTouhou.Sound {
             }
             data.Seek(0, SeekOrigin.Begin);
             return new SoundData {
-                voice = new SourceVoice(PoolTouhou.SoundManager.xAudio2, format),
+                voice = new SourceVoice(PoolTouhou.SoundManager.xAudio2, format, false),
                 format = format,
                 buffer = new AudioBuffer(data),
-                looping = false
             };
         }
     }
