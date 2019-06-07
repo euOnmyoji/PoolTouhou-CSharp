@@ -2,7 +2,7 @@ using PoolTouhou.Manager;
 using PoolTouhou.Utils;
 using SharpDX.Direct2D1;
 
-namespace PoolTouhou.GameState {
+namespace PoolTouhou.GameStates {
     public class GamingState : IGameState {
         private readonly IGame game;
 
@@ -19,10 +19,13 @@ namespace PoolTouhou.GameState {
             game.Update(ref input);
             if (game.IsExit()) {
                 game.Dispose();
-                MainForm.gameState = new MenuState();
+                PoolTouhou.GameState = new MenuState();
             }
         }
 
         public string GetStateName() => "Gaming";
+        public void Dispose() {
+
+        }
     }
 }

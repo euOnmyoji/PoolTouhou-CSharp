@@ -4,10 +4,12 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
-using PoolTouhou.GameState;
+using PoolTouhou.GameStates;
 using PoolTouhou.Utils;
 using SharpDX.Direct2D1;
+using SharpDX.Direct3D11;
 using SharpDX.DirectWrite;
+using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
 using static PoolTouhou.PoolTouhou;
 using Brush = SharpDX.Direct2D1.Brush;
@@ -18,8 +20,6 @@ namespace PoolTouhou {
         public Brush brush;
         private SharpDX.DirectWrite.Factory textFactory;
         public TextFormat textFormat;
-        public static IGameState gameState;
-
 
         /// <summary>
         /// 清理所有正在使用的资源。
@@ -47,7 +47,7 @@ namespace PoolTouhou {
                 while (running) {
                     ushort goalTps = Tps;
                     var input = new InputData();
-                    gameState.Update(ref input);
+                    GameState.Update(ref input);
 
                     if (++tickCount >= goalTps) {
                         tickCount = 0;
@@ -82,16 +82,24 @@ namespace PoolTouhou {
                 double k = updateFpsPaintCount * Stopwatch.Frequency;
                 int paintCount = 0;
                 long last = Watch.ElapsedTicks;
-                while (running && !DirectXResource.RenderTarget.IsDisposed) {
-                    var renderTarget = DirectXResource.RenderTarget;
+                var query = new Query(
+                    DxResource.d3d11Device,
+                    new QueryDescription {
+                        Flags = QueryFlags.None, Type = QueryType.Event
+                    }
+                );
+                while (running && !DxResource.RenderTarget.IsDisposed) {
+                    var renderTarget = DxResource.RenderTarget;
                     renderTarget.BeginDraw();
-                    gameState.Draw(renderTarget);
+                    DxResource.d3d11Device.ImmediateContext.Begin(query);
+                    GameState.Draw(renderTarget);
                     if (++paintCount == updateFpsPaintCount) {
                         paintCount = 0;
                         long now = Watch.ElapsedTicks;
                         fps = k / (now - last);
                         last = now;
                     }
+                    DxResource.d3d11Device.ImmediateContext.End(query);
                     if (tps > 0 && fps > 0) {
                         var size = renderTarget.Size;
                         string tpsStr = $"{tps:F1}tps";
@@ -126,6 +134,7 @@ namespace PoolTouhou {
                         );
                     }
                     renderTarget.EndDraw();
+                    DxResource.swapChain.Present(0, PresentFlags.None);
                 }
             } catch (Exception e) {
                 Logger.Info(e.Message + Environment.NewLine + e.StackTrace);
@@ -135,12 +144,12 @@ namespace PoolTouhou {
         }
 
         public void Init() {
-            brush = new SolidColorBrush(DirectXResource.RenderTarget, new RawColor4(100, 100, 100, 1));
+            brush = new SolidColorBrush(DxResource.RenderTarget, new RawColor4(100, 100, 100, 1));
             textFactory = new SharpDX.DirectWrite.Factory();
             textFormat = new TextFormat(textFactory, Font.FontFamily.Name, FONT_SIZE);
             new Thread(
                 () => {
-                    gameState = new LoadingMenuState();
+                    GameState = new LoadingMenuState();
                     new Thread(DrawLoop).Start();
                     UpdateLoop();
                 }

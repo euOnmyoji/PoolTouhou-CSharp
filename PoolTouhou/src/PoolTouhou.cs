@@ -2,13 +2,23 @@
 using System.Diagnostics;
 using System.Windows.Forms;
 using PoolTouhou.Device;
+using PoolTouhou.GameStates;
 using PoolTouhou.Sound;
 using PoolTouhou.Utils;
 
 namespace PoolTouhou {
     public static class PoolTouhou {
         public static MainForm MainForm { get; private set; }
-        public static DirectXResource DirectXResource { get; private set; }
+
+        public static IGameState GameState {
+            get => gameState;
+            set {
+                gameState?.Dispose();
+                gameState = value;
+            }
+        }
+
+        public static DirectXResource DxResource { get; private set; }
 
         public static ushort Tps {
             get => tps;
@@ -33,11 +43,11 @@ namespace PoolTouhou {
             try {
                 Init();
             } catch (Exception e) {
+                Dispose();
                 Logger.Info(e.Message + Environment.NewLine + e.StackTrace);
                 MessageBox.Show(e.Message + Environment.NewLine + e.StackTrace, @"很抱歉出错了！");
-                Dispose();
                 Application.Exit();
-                return 1;
+                return -1;
             }
             GC.Collect();
             Application.Run(MainForm);
@@ -53,7 +63,7 @@ namespace PoolTouhou {
             Logger.Info("开始实例化游戏窗口类");
             MainForm = new MainForm();
             Logger.Info("初始化图形资源");
-            DirectXResource = new DirectXResource();
+            DxResource = new DirectXResource();
             Logger.Info("初始化音频资源");
             SoundManager = new SoundManager();
             Logger.Info("初始化游戏");
@@ -63,7 +73,10 @@ namespace PoolTouhou {
         private static void Dispose() {
             MainForm?.Dispose();
             SoundManager?.Dispose();
-            DirectXResource?.Dispose();
+            DxResource?.Dispose();
+            gameState?.Dispose();
         }
+
+        private static IGameState gameState;
     }
 }

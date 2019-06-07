@@ -61,9 +61,9 @@
     <Compile Include="src\GameObject\ICollidable.cs" />
     <Compile Include="src\GameObject\ILocateable.cs" />
     <Compile Include="src\GameObject\Player\IPlayer.cs" />
-    <Compile Include="src\GameState\GamingState.cs" />
-    <Compile Include="src\GameState\IGameState.cs" />
-    <Compile Include="src\GameState\TitleState.cs" />
+    <Compile Include="src\GameStates\GamingState.cs" />
+    <Compile Include="src\GameStates\IGameState.cs" />
+    <Compile Include="src\GameStates\TitleState.cs" />
     <Compile Include="src\Games\GameManager.cs" />
     <Compile Include="src\Games\PoolRush\PoolRush.cs" />
     <Compile Include="src\MainForm.cs">

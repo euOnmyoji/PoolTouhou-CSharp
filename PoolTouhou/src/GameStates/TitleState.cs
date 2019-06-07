@@ -8,14 +8,14 @@ using PoolTouhou.UI;
 using PoolTouhou.Utils;
 using SharpDX.Direct2D1;
 using SharpDX.Mathematics.Interop;
-using static PoolTouhou.Utils.Util;
 
-namespace PoolTouhou.GameState {
+namespace PoolTouhou.GameStates {
     internal class MenuState : IGameState {
         private readonly IUi[] uis = {new TitleMenuUi(), new GameChooseUi()};
         private sbyte cur;
 
         public MenuState() {
+            Logger.Info("实例化主菜单状态");
             PoolTouhou.SoundManager.TryLoad(
                 "title",
                 @"res\bgm\上海アリス幻樂団 - 桜舞い散る天空.mp3",
@@ -47,15 +47,18 @@ namespace PoolTouhou.GameState {
         }
 
         public string GetStateName() => @"Menu";
+        public void Dispose() {
+
+        }
     }
 
     internal class LoadingMenuState : IGameState {
-        private readonly Bitmap loadingMap = LoadBitMapFromFile(
+        private readonly Bitmap loadingMap = Util.LoadBitMapFromFile(
             "res/ascii/loading.png",
             SharpDX.WIC.PixelFormat.Format32bppPRGBA
         );
 
-        private readonly Bitmap background = LoadBitMapFromFile(
+        private readonly Bitmap background = Util.LoadBitMapFromFile(
             "res/background/loading.png",
             SharpDX.WIC.PixelFormat.Format32bppPRGBA
         );
@@ -90,11 +93,6 @@ namespace PoolTouhou.GameState {
                     }
                 }
             ).Start();
-        }
-
-        ~LoadingMenuState() {
-            loadingMap.Dispose();
-            background.Dispose();
         }
 
         public void Draw(RenderTarget target) {
@@ -150,13 +148,17 @@ namespace PoolTouhou.GameState {
 
         public void Update(ref InputData input) {
             if (startLoading && menuState != null) {
-                MainForm.gameState = menuState;
+                PoolTouhou.GameState = menuState;
                 menuState = null;
             }
         }
 
         public string GetStateName() {
             return @"LoadingMenu";
+        }
+
+        public void Dispose() {
+
         }
     }
 }

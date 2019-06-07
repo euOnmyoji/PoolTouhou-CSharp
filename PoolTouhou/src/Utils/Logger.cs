@@ -1,32 +1,29 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace PoolTouhou.Utils {
     public static class Logger {
-
         static Logger() {
             File.Delete("log.log");
         }
 
         public static async void Info(string msg) {
-            using var writer = new FileStream("log.log", FileMode.Append);
-            using var stream = new StreamWriter(writer);
-            await stream.WriteLineAsync($"{DateTime.Now} {msg}");
-            stream.Flush();
+            using var stream = new FileStream("log.log", FileMode.Append, FileAccess.Write, FileShare.Read);
+            using var writer = new StreamWriter(stream);
+            await writer.WriteLineAsync($"{DateTime.Now} {msg}");
         }
 
         public static async void MemoryLack(string msg) {
-            using var writer = new FileStream("log.log", FileMode.Append);
-            using var stream = new StreamWriter(writer);
-            await stream.WriteLineAsync($"{DateTime.Now} {msg}");
-            stream.Flush();
+            using var stream = new FileStream("log.log", FileMode.Append, FileAccess.Write, FileShare.Read);
+            using var writer = new StreamWriter(stream);
+            await writer.WriteLineAsync($"{DateTime.Now} {msg}");
         }
 
         public static async void LogException(Exception e) {
-            using var writer = new FileStream("log.log", FileMode.Append);
-            using var stream = new StreamWriter(writer);
-            await stream.WriteLineAsync($"{DateTime.Now} {e.Message + Environment.NewLine + e.StackTrace}");
-            stream.Flush();
+            using var stream = new FileStream("log.log", FileMode.Append, FileAccess.Write, FileShare.Read);
+            using var writer = new StreamWriter(stream);
+            await writer.WriteLineAsync($"{DateTime.Now} {e.Message + Environment.NewLine + e.StackTrace}");
         }
     }
 }
