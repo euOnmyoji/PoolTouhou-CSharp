@@ -13,8 +13,9 @@ namespace PoolTouhou {
         public static IGameState GameState {
             get => gameState;
             set {
-                gameState?.Dispose();
+                var old = gameState;
                 gameState = value;
+                old?.Dispose();
             }
         }
 

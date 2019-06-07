@@ -47,8 +47,8 @@ namespace PoolTouhou.GameStates {
         }
 
         public string GetStateName() => @"Menu";
-        public void Dispose() {
 
+        public void Dispose() {
         }
     }
 
@@ -158,7 +158,6 @@ namespace PoolTouhou.GameStates {
         }
 
         public void Dispose() {
-
         }
     }
 }

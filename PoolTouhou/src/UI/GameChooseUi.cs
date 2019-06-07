@@ -37,7 +37,7 @@ namespace PoolTouhou.UI {
             if (input.Spell > 0) {
                 return UiEvents.EXIT;
             }
-            if (input.Shoot == 1 ) {
+            if (input.Shoot == 1) {
                 PoolTouhou.GameState = new GamingState(games[cur]);
                 PoolTouhou.SoundManager.Unload("title");
                 return UiEvents.SELECTED_GAME;

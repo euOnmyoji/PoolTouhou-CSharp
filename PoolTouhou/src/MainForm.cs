@@ -78,9 +78,7 @@ namespace PoolTouhou {
         private void DrawLoop() {
             try {
                 double fps = 0;
-                const int updateFpsPaintCount = 60;
-                double k = updateFpsPaintCount * Stopwatch.Frequency;
-                int paintCount = 0;
+                long lastCount = 0;
                 long last = Watch.ElapsedTicks;
                 var query = new Query(
                     DxResource.d3d11Device,
@@ -91,15 +89,15 @@ namespace PoolTouhou {
                 while (running && !DxResource.RenderTarget.IsDisposed) {
                     var renderTarget = DxResource.RenderTarget;
                     renderTarget.BeginDraw();
-                    DxResource.d3d11Device.ImmediateContext.Begin(query);
                     GameState.Draw(renderTarget);
-                    if (++paintCount == updateFpsPaintCount) {
-                        paintCount = 0;
-                        long now = Watch.ElapsedTicks;
-                        fps = k / (now - last);
+                    long now = Watch.ElapsedTicks;
+                    long dur = now - last;
+                    if (dur >= Stopwatch.Frequency) {
+                        long paintCount = DxResource.swapChain.LastPresentCount;
+                        fps = (paintCount - lastCount) * Stopwatch.Frequency / (double) dur;
                         last = now;
+                        lastCount = paintCount;
                     }
-                    DxResource.d3d11Device.ImmediateContext.End(query);
                     if (tps > 0 && fps > 0) {
                         var size = renderTarget.Size;
                         string tpsStr = $"{tps:F1}tps";
@@ -166,8 +164,7 @@ namespace PoolTouhou {
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1600, 900);
             Size = new Size(1600, 900);
-            SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);
-            BackColor = Color.Black;
+            BackColor = Color.FromArgb(255, 0, 0, 0);
             Text = @"PoolTouhou";
         }
 

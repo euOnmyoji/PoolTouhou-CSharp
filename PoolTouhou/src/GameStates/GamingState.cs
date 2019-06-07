@@ -18,14 +18,14 @@ namespace PoolTouhou.GameStates {
         public void Update(ref InputData input) {
             game.Update(ref input);
             if (game.IsExit()) {
-                game.Dispose();
                 PoolTouhou.GameState = new MenuState();
             }
         }
 
         public string GetStateName() => "Gaming";
-        public void Dispose() {
 
+        public void Dispose() {
+            game.Dispose();
         }
     }
 }

@@ -15,7 +15,11 @@ namespace PoolTouhou.UI.Buttons {
         );
 
         private ButtonsResources() {
-            PoolTouhou.SoundManager.Load(@"selectButton", @"res/SE/se_select00.mp3", GetSoundStreamMethods.GetMp3SoundStream);
+            PoolTouhou.SoundManager.Load(
+                @"selectButton",
+                @"res/SE/se_select00.mp3",
+                GetSoundStreamMethods.GetMp3SoundStream
+            );
         }
 
         ~ButtonsResources() {
