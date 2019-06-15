@@ -16,7 +16,7 @@ namespace PoolTouhou.GameStates {
         private sbyte cur;
 
         public MenuState() : base(null) {
-            Logger.Info("实例化主菜单状态");
+            PoolTouhou.Logger.Info("实例化主菜单状态");
             PoolTouhou.SoundManager.TryLoad(
                 "title",
                 @"res\bgm\上海アリス幻樂団 - 桜舞い散る天空.mp3",
@@ -84,7 +84,7 @@ namespace PoolTouhou.GameStates {
                         MainClass.OnLoad();
                         foreach (var fileInfo in dirInfo.GetFiles()) {
                             if (fileInfo.Name.EndsWith(".dll")) {
-                                Logger.Info($"loading {fileInfo} ");
+                                PoolTouhou.Logger.Info($"loading {fileInfo} ");
                                 var asm = Assembly.LoadFile(fileInfo.FullName);
                                 var type = asm.GetType(
                                     $"{fileInfo.Name.Substring(0, fileInfo.Name.Length - 4)}.MainClass"
@@ -93,7 +93,7 @@ namespace PoolTouhou.GameStates {
                         }
                         menuState = new MenuState();
                     } catch (Exception e) {
-                        Logger.Info(e.Message + Environment.NewLine + e.StackTrace);
+                        PoolTouhou.Logger.Info(e.Message + Environment.NewLine + e.StackTrace);
                         throw;
                     }
                 }

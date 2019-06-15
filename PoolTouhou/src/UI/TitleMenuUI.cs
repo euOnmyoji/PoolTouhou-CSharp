@@ -20,7 +20,7 @@ namespace PoolTouhou.UI {
             if (input.empty) return UiEvents.FINE;
             int result = UiEvents.FINE;
 
-            if (input.shoot == 1) {
+            if (input.shoot == 1 || input.enter == 1) {
                 result = buttons[curSelect].Click();
             } else if (input.spell == 1) {
                 if (curSelect != 1) {

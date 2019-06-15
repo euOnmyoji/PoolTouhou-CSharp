@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using NAudio.Wave;
-using PoolTouhou.Utils;
 using SharpDX;
 using SharpDX.Multimedia;
 using SharpDX.XAudio2;
@@ -37,7 +36,7 @@ namespace PoolTouhou.Sound {
                 toSoundData = GetSoundStreamMethods.GetWavSoundStream;
             }
             if (!File.Exists(path)) {
-                Logger.Info($"can't load not exist sound file: {path}");
+                PoolTouhou.Logger.Info($"can't load not exist sound file: {path}");
             }
             using var fs = File.OpenRead(path);
             var data = toSoundData(fs);
@@ -91,7 +90,7 @@ namespace PoolTouhou.Sound {
                 data.voice.SubmitSourceBuffer(data.buffer, data.decodedPacketsInfo);
                 data.voice.Start();
             } catch (Exception e) {
-                Logger.LogException(e);
+                PoolTouhou.Logger.LogException(e);
             }
         }
     }
@@ -114,6 +113,7 @@ namespace PoolTouhou.Sound {
     public static class GetSoundStreamMethods {
         public static SoundData GetWavSoundStream(FileStream fs) {
             var ss = new SoundStream(fs);
+            ss.Seek(0,SeekOrigin.Begin);
             return new SoundData {
                 voice = new SourceVoice(PoolTouhou.SoundManager.xAudio2, ss.Format, false),
                 buffer = new AudioBuffer(ss),

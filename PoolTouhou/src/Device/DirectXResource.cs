@@ -1,5 +1,4 @@
 using System;
-using PoolTouhou.Utils;
 using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.Direct3D;
@@ -33,7 +32,7 @@ namespace PoolTouhou.Device {
 
         internal DirectXResource() {
             var form = PoolTouhou.MainForm;
-            ComObject.LogMemoryLeakWarning = Logger.MemoryLack;
+            ComObject.LogMemoryLeakWarning = PoolTouhou.Logger.MemoryLack;
             d2dFactory = new Factory();
             d3d11Device = new SharpDX.Direct3D11.Device(DriverType.Hardware, DeviceCreationFlags.BgraSupport);
             dxgiDevice = ComObject.As<SharpDX.DXGI.Device>(d3d11Device.NativePointer);

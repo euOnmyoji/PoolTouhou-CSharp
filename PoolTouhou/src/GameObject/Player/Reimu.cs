@@ -5,31 +5,38 @@ using PoolTouhou.Games;
 using PoolTouhou.Utils;
 using SharpDX.Direct2D1;
 using SharpDX.Mathematics.Interop;
-using Brush = SharpDX.Direct2D1.Brush;
+using PixelFormat = SharpDX.WIC.PixelFormat;
 
 namespace PoolTouhou.GameObject.Player {
+    /// <summary>
+    ///灵梦(x)
+    /// 红点(√)
+    /// </summary>
     public class Reimu : Player {
         private float x = 800;
-        private float y = 900;
+        private float y = 800;
+        private const byte dx = 16;
+        private const float dy = 47 / 2f;
         private const byte shootInterval = 7;
         private byte shootCd;
-        private readonly Brush brush;
+        private readonly SharpDX.Direct2D1.Bitmap bitmap;
         private readonly ICollection<IBullet> bullets;
         private readonly GameRegion region;
 
         public Reimu(IGame g) {
             bullets = g.Bullets;
-            region = g.GameRegion;
-            brush = new SolidColorBrush(PoolTouhou.DxResource.RenderTarget, new RawColor4(1, 0, 0, 1));
+            region = g.GameRegion;z
+            //image from J u e  Y i n g ()
+            bitmap = Util.LoadBitMapFromFile("res/player/reimu1.png", PixelFormat.Format32bppPRGBA);
         }
 
         public float X {
             get => x;
             set {
-                if (value > region.maxX) {
-                    x = region.maxX;
-                } else if (value < region.minX) {
-                    x = region.minX;
+                if (value + dx > region.maxX) {
+                    x = region.maxX - dx;
+                } else if (value - dx < region.minX) {
+                    x = region.minX + dx;
                 } else {
                     x = value;
                 }
@@ -39,10 +46,10 @@ namespace PoolTouhou.GameObject.Player {
         public float Y {
             get => y;
             set {
-                if (value > region.maxY) {
-                    y = region.maxY;
-                } else if (value < region.minY) {
-                    y = region.minY;
+                if (value + dy > region.maxY) {
+                    y = region.maxY - dy;
+                } else if (value - dy < region.minY) {
+                    y = region.minY + dy;
                 } else {
                     y = value;
                 }
@@ -51,7 +58,7 @@ namespace PoolTouhou.GameObject.Player {
 
         public override void Update(ref InputData input) {
             var location = input.MoveLocation;
-            float delta = MoveUtil.GetCoordinateDelta(ref location, 4);
+            float delta = MoveUtil.GetCoordinateDelta(ref location, input.slow > 0 ? 2 : 4);
             if ((location & MoveLocation.UP) != 0) {
                 Y -= delta;
             }
@@ -77,14 +84,19 @@ namespace PoolTouhou.GameObject.Player {
         }
 
         public override void Draw(RenderTarget renderTarget) {
-            renderTarget.FillEllipse(new Ellipse(new RawVector2(x, y), 10, 10), brush);
+            renderTarget.DrawBitmap(
+                bitmap,
+                new RawRectangleF(x - dx, y - dy, x + dx, y + dy),
+                1,
+                BitmapInterpolationMode.Linear
+            );
         }
 
         public override bool IsCollided(ICollidable that) {
             return false;
         }
 
-        public override ICollection<IBoundingBox> BoundingBoxes { get; }
+        public override ICollection<IBoundingBox> BoundingBoxes => null;
 
         public override PointF Point {
             get => new PointF(X, Y);
@@ -95,7 +107,7 @@ namespace PoolTouhou.GameObject.Player {
         }
 
         public override void Dispose() {
-            brush?.Dispose();
+            bitmap?.Dispose();
         }
     }
 

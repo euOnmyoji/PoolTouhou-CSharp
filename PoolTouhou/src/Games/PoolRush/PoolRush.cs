@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using PoolTouhou.Bullets;
 using PoolTouhou.GameObject.Player;
-using PoolTouhou.Sound;
 using PoolTouhou.Utils;
 using SharpDX.Direct2D1;
 
@@ -51,7 +50,8 @@ namespace PoolTouhou.Games.PoolRush {
 
         public void Load() {
             player = new Reimu(this);
-            PoolTouhou.SoundManager.Load("bgmtest", @"res/bgm/mdl.mp3", GetSoundStreamMethods.GetMp3SoundStream);
+            //todo: h灰灰出来挨打
+            PoolTouhou.SoundManager.Load("bgmtest", @"res/bgm/dff2.wav");
             PoolTouhou.SoundManager.Loop("bgmtest");
         }
 

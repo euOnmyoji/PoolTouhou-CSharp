@@ -68,7 +68,7 @@ namespace PoolTouhou {
                     }
                 }
             } catch (Exception e) {
-                Logger.Info(e.Message + Environment.NewLine + e.StackTrace);
+                PoolTouhou.Logger.Info(e.Message + Environment.NewLine + e.StackTrace);
                 MessageBox.Show(e.Message + Environment.NewLine + e.StackTrace, @"很抱歉出错了！");
                 Application.Exit();
             }
@@ -128,7 +128,7 @@ namespace PoolTouhou {
                     DxResource.swapChain.Present(1, PresentFlags.None);
                 }
             } catch (Exception e) {
-                Logger.Info(e.Message + Environment.NewLine + e.StackTrace);
+                PoolTouhou.Logger.Info(e.Message + Environment.NewLine + e.StackTrace);
                 MessageBox.Show(e.Message + Environment.NewLine + e.StackTrace, @"很抱歉出错了！");
                 Application.Exit();
             }
@@ -163,11 +163,17 @@ namespace PoolTouhou {
 
         protected override void OnKeyDown(KeyEventArgs e) {
             base.OnKeyDown(e);
+            if (e.Shift) {
+                InputData.KEY_PRESSED.Add((int)Keys.Shift);
+            }
             InputData.KEY_PRESSED.Add(e.KeyValue);
         }
 
         protected override void OnKeyUp(KeyEventArgs e) {
             base.OnKeyUp(e);
+            if (!e.Shift) {
+                InputData.KEY_PRESSED.Remove((int)Keys.Shift);
+            }
             InputData.KEY_PRESSED.Remove(e.KeyValue);
         }
 

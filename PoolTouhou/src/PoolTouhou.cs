@@ -9,6 +9,7 @@ using PoolTouhou.Utils;
 namespace PoolTouhou {
     public static class PoolTouhou {
         public static MainForm MainForm { get; private set; }
+        public static Logger Logger { get; private set; }
 
         public static GameState GameState {
             get => gameState;
@@ -42,6 +43,7 @@ namespace PoolTouhou {
         public static int Main(string[] args) {
             Watch.Start();
             try {
+                Logger = new Logger();
                 Init();
             } catch (Exception e) {
                 Dispose();
@@ -72,6 +74,7 @@ namespace PoolTouhou {
         }
 
         private static void Dispose() {
+            Logger?.Dispose();
             MainForm?.Dispose();
             SoundManager?.Dispose();
             DxResource?.Dispose();

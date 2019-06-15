@@ -39,13 +39,18 @@ namespace PoolTouhou.Utils {
         public readonly int left;
         public readonly int right;
 
+        public readonly int slow;
+        public readonly int enter;
+
         public InputData(bool empty = true,
             int shoot = 0,
             int spell = 0,
             int up = 0,
             int down = 0,
             int left = 0,
-            int right = 0) {
+            int right = 0,
+            int slow = 0,
+            int enter = 0) {
             this.empty = empty;
             this.shoot = shoot;
             this.spell = spell;
@@ -53,6 +58,9 @@ namespace PoolTouhou.Utils {
             this.down = down;
             this.left = left;
             this.right = right;
+
+            this.slow = slow;
+            this.enter = enter;
         }
 
         public static InputData GetData() {
@@ -64,7 +72,9 @@ namespace PoolTouhou.Utils {
                     KEY_PRESSED.Contains((int) Keys.Up) ? last.up + 1 : 0,
                     KEY_PRESSED.Contains((int) Keys.Down) ? last.down + 1 : 0,
                     KEY_PRESSED.Contains((int) Keys.Left) ? last.left + 1 : 0,
-                    KEY_PRESSED.Contains((int) Keys.Right) ? last.right + 1 : 0
+                    KEY_PRESSED.Contains((int) Keys.Right) ? last.right + 1 : 0,
+                    KEY_PRESSED.Contains((int)Keys.Shift) ? last.slow + 1 : 0,
+                    KEY_PRESSED.Contains((int) Keys.Enter) ? last.enter + 1 : 0
                 );
             }
             return new InputData();
