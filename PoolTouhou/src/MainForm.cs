@@ -7,7 +7,6 @@ using System.Windows.Forms;
 using PoolTouhou.GameStates;
 using PoolTouhou.Utils;
 using SharpDX.Direct2D1;
-using SharpDX.Direct3D11;
 using SharpDX.DirectWrite;
 using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
@@ -46,8 +45,8 @@ namespace PoolTouhou {
                 double nextFrameCount = lastCount + OneTickCount;
                 while (running) {
                     ushort goalTps = Tps;
-                    var input = new InputData();
-                    GameState.Update(ref input);
+                    var input = InputData.GetData();
+                    PoolTouhou.GameState.Update(ref input);
 
                     if (++tickCount >= goalTps) {
                         tickCount = 0;
@@ -80,16 +79,10 @@ namespace PoolTouhou {
                 double fps = 0;
                 long lastCount = 0;
                 long last = Watch.ElapsedTicks;
-                var query = new Query(
-                    DxResource.d3d11Device,
-                    new QueryDescription {
-                        Flags = QueryFlags.None, Type = QueryType.Event
-                    }
-                );
                 while (running && !DxResource.RenderTarget.IsDisposed) {
                     var renderTarget = DxResource.RenderTarget;
                     renderTarget.BeginDraw();
-                    GameState.Draw(renderTarget);
+                    PoolTouhou.GameState.Draw(renderTarget);
                     long now = Watch.ElapsedTicks;
                     long dur = now - last;
                     if (dur >= Stopwatch.Frequency) {
@@ -147,7 +140,7 @@ namespace PoolTouhou {
             textFormat = new TextFormat(textFactory, Font.FontFamily.Name, FONT_SIZE);
             new Thread(
                 () => {
-                    GameState = new LoadingMenuState();
+                    PoolTouhou.GameState = new LoadingMenuState();
                     new Thread(DrawLoop).Start();
                     UpdateLoop();
                 }

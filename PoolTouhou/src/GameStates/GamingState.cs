@@ -1,30 +1,27 @@
-using PoolTouhou.Manager;
+using PoolTouhou.Games;
 using PoolTouhou.Utils;
 using SharpDX.Direct2D1;
 
 namespace PoolTouhou.GameStates {
-    public class GamingState : IGameState {
-        private readonly IGame game;
-
-        public GamingState(IGame game) {
-            this.game = game;
+    public class GamingState : GameState {
+        public GamingState(IGame game) : base(game) {
             game.Load();
         }
 
-        public void Draw(RenderTarget renderTarget) {
+        public override void Draw(RenderTarget renderTarget) {
             game.Draw(renderTarget);
         }
 
-        public void Update(ref InputData input) {
+        public override void Update(ref InputData input) {
             game.Update(ref input);
             if (game.IsExit()) {
                 PoolTouhou.GameState = new MenuState();
             }
         }
 
-        public string GetStateName() => "Gaming";
+        public override string GetStateName() => "Gaming";
 
-        public void Dispose() {
+        public override void Dispose() {
             game.Dispose();
         }
     }

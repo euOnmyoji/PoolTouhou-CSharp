@@ -2,6 +2,7 @@
 using System.IO;
 using System.Reflection;
 using System.Threading;
+using PoolTouhou.Games;
 using PoolTouhou.Games.PoolRush;
 using PoolTouhou.Sound;
 using PoolTouhou.UI;
@@ -10,11 +11,11 @@ using SharpDX.Direct2D1;
 using SharpDX.Mathematics.Interop;
 
 namespace PoolTouhou.GameStates {
-    internal class MenuState : IGameState {
+    internal class MenuState : GameState {
         private readonly IUi[] uis = {new TitleMenuUi(), new GameChooseUi()};
         private sbyte cur;
 
-        public MenuState() {
+        public MenuState() : base(null) {
             Logger.Info("实例化主菜单状态");
             PoolTouhou.SoundManager.TryLoad(
                 "title",
@@ -23,11 +24,11 @@ namespace PoolTouhou.GameStates {
             );
         }
 
-        public void Draw(RenderTarget target) {
+        public override void Draw(RenderTarget target) {
             uis[cur].Draw(target);
         }
 
-        public void Update(ref InputData input) {
+        public override void Update(ref InputData input) {
             PoolTouhou.SoundManager.Loop("title");
             int result = uis[cur].Update(ref input);
             switch (result) {
@@ -46,13 +47,17 @@ namespace PoolTouhou.GameStates {
             }
         }
 
-        public string GetStateName() => @"Menu";
+        public override string GetStateName() => @"Menu";
 
-        public void Dispose() {
+        public IGame GamingGame() {
+            return null;
+        }
+
+        public override void Dispose() {
         }
     }
 
-    internal class LoadingMenuState : IGameState {
+    internal class LoadingMenuState : GameState {
         private readonly Bitmap loadingMap = Util.LoadBitMapFromFile(
             "res/ascii/loading.png",
             SharpDX.WIC.PixelFormat.Format32bppPRGBA
@@ -67,7 +72,7 @@ namespace PoolTouhou.GameStates {
         private MenuState menuState;
         private readonly DateTime start = DateTime.Now;
 
-        public LoadingMenuState() {
+        public LoadingMenuState() : base(null) {
             new Thread(
                 () => {
                     try {
@@ -95,7 +100,7 @@ namespace PoolTouhou.GameStates {
             ).Start();
         }
 
-        public void Draw(RenderTarget target) {
+        public override void Draw(RenderTarget target) {
             //loading won't last long?
             float ms = (float) DateTime.Now.Subtract(start).TotalMilliseconds;
             if (ms > 2000) {
@@ -146,18 +151,19 @@ namespace PoolTouhou.GameStates {
             );
         }
 
-        public void Update(ref InputData input) {
+        public override void Update(ref InputData input) {
             if (startLoading && menuState != null) {
                 PoolTouhou.GameState = menuState;
                 menuState = null;
             }
         }
 
-        public string GetStateName() {
+        public override string GetStateName() {
             return @"LoadingMenu";
         }
 
-        public void Dispose() {
+
+        public override void Dispose() {
         }
     }
 }

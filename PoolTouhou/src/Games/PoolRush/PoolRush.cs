@@ -1,54 +1,66 @@
 using System;
-using PoolTouhou.Manager;
+using System.Collections.Generic;
+using PoolTouhou.Bullets;
+using PoolTouhou.GameObject.Player;
 using PoolTouhou.Sound;
 using PoolTouhou.Utils;
-using SharpDX;
 using SharpDX.Direct2D1;
-using SharpDX.Direct3D11;
-using SharpDX.Mathematics.Interop;
-using static PoolTouhou.PoolTouhou;
-using Resource = SharpDX.Direct3D11.Resource;
 
 namespace PoolTouhou.Games.PoolRush {
     public class PoolRush : IGame {
+        private Player player;
+        private Utils.LinkedList<IBullet> bullets = new Utils.LinkedList<IBullet>();
+
         private bool exit;
-        private int a;
+        private static GameRegion gameRegion = new GameRegion(0, 1600, 0, 900);
         public string Name => @"PoolRush";
+        public ICollection<IBullet> Bullets => bullets;
         public Random Random { get; } = new Random();
 
-        private Texture2D texture2D;
-        private Resource resource;
-        private RenderTargetView rtView;
-
         public void Draw(RenderTarget renderTarget) {
-            var context = DxResource.d3d11Device.ImmediateContext;
-            context.ClearRenderTargetView(rtView, new RawColor4(0.25f, 0.5f, 0.5f, 1));
+            renderTarget.Clear(null);
+            player.Draw(renderTarget);
+            var bulletNode = bullets.Header;
+
+            while (bulletNode != null) {
+                var bullet = bulletNode.value;
+                bullet.Draw(renderTarget);
+                bulletNode = bulletNode.Next;
+            }
         }
 
         public void Update(ref InputData input) {
-            if (input.Spell == 1) {
+            if (input.spell == 1) {
                 exit = true;
+            }
+            player.Update(ref input);
+            var bulletNode = bullets.Header;
+            while (bulletNode != null) {
+                var bullet = bulletNode.value;
+                bullet.Update(ref input);
+                if (bullet.IsCollided(player)) {
+                    player.dying = 30;
+                }
+                if (bullet.IsDead) {
+                    bulletNode.Remove();
+                }
+                bulletNode = bulletNode.Next;
             }
         }
 
 
         public void Load() {
+            player = new Reimu(this);
             PoolTouhou.SoundManager.Load("bgmtest", @"res/bgm/mdl.mp3", GetSoundStreamMethods.GetMp3SoundStream);
             PoolTouhou.SoundManager.Loop("bgmtest");
-
-            texture2D = DxResource.swapChain.GetBackBuffer<Texture2D>(0);
-            resource = CppObject.FromPointer<Resource>(texture2D.NativePointer);
-            rtView = new RenderTargetView(DxResource.d3d11Device, resource);
         }
 
         public bool IsExit() => exit;
+        public GameRegion GameRegion => gameRegion;
 
         public void Dispose() {
             exit = false;
             PoolTouhou.SoundManager.Unload("bgmtest");
-            texture2D?.Dispose();
-            resource?.Dispose();
-            rtView?.Dispose();
         }
     }
 

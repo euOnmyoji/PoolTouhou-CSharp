@@ -17,12 +17,12 @@ namespace PoolTouhou.UI {
         }
 
         public int Update(ref InputData input) {
-            if (input.NoInput) return UiEvents.FINE;
+            if (input.empty) return UiEvents.FINE;
             int result = UiEvents.FINE;
 
-            if (input.Shoot == 1) {
+            if (input.shoot == 1) {
                 result = buttons[curSelect].Click();
-            } else if (input.Spell == 1) {
+            } else if (input.spell == 1) {
                 if (curSelect != 1) {
                     buttons[curSelect].Unselect();
                     curSelect = 1;
@@ -34,12 +34,12 @@ namespace PoolTouhou.UI {
             } else if (!input.IsNoMove()) {
                 const int cd = 10;
                 const int firstCd = 30;
-                if (input.Down > firstCd && input.Down % cd == 1 || input.Down == 1) {
+                if (input.down > firstCd && input.down % cd == 1 || input.down == 1) {
                     buttons[curSelect++].Unselect();
                     if (curSelect >= buttons.Length) { curSelect = 0; }
 
                     buttons[curSelect].Select();
-                } else if (input.Up > firstCd && input.Up % cd == 1 || input.Up == 1) {
+                } else if (input.up > firstCd && input.up % cd == 1 || input.up == 1) {
                     buttons[curSelect--].Unselect();
                     if (curSelect < 0) { curSelect = buttons.Length - 1; }
 

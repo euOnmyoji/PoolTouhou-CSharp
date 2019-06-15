@@ -1,6 +1,6 @@
 using System.Collections.Generic;
+using PoolTouhou.Games;
 using PoolTouhou.GameStates;
-using PoolTouhou.Manager;
 using PoolTouhou.Utils;
 using SharpDX.Direct2D1;
 using SharpDX.Mathematics.Interop;
@@ -34,10 +34,10 @@ namespace PoolTouhou.UI {
         }
 
         public int Update(ref InputData input) {
-            if (input.Spell > 0) {
+            if (input.spell > 0) {
                 return UiEvents.EXIT;
             }
-            if (input.Shoot == 1) {
+            if (input.shoot == 1) {
                 PoolTouhou.GameState = new GamingState(games[cur]);
                 PoolTouhou.SoundManager.Unload("title");
                 return UiEvents.SELECTED_GAME;

@@ -10,7 +10,7 @@ namespace PoolTouhou {
     public static class PoolTouhou {
         public static MainForm MainForm { get; private set; }
 
-        public static IGameState GameState {
+        public static GameState GameState {
             get => gameState;
             set {
                 var old = gameState;
@@ -78,6 +78,6 @@ namespace PoolTouhou {
             gameState?.Dispose();
         }
 
-        private static IGameState gameState;
+        private static GameState gameState;
     }
 }
