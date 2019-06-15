@@ -18,9 +18,9 @@ namespace PoolTouhou.Utils {
     public static class MoveUtil {
         public static float GetCoordinateDelta(ref MoveLocation move, float speed = 2) {
             byte k = 0;
-            for (byte i = (byte)move; i > 0; i >>= 2) {
+            for (byte i = (byte)move; i != 0; i >>= 2) {
                 const byte checkValue = 0b11;
-                if ((i & checkValue) > 0) {
+                if ((i & checkValue) != 0) {
                     ++k;
                 }
             }
