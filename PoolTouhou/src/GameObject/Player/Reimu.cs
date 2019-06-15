@@ -51,7 +51,7 @@ namespace PoolTouhou.GameObject.Player {
 
         public override void Update(ref InputData input) {
             var location = input.MoveLocation;
-            float delta = MoveUtil.GetCoordinateDelta(ref location);
+            float delta = MoveUtil.GetCoordinateDelta(ref location, 4);
             if ((location & MoveLocation.UP) != 0) {
                 Y -= delta;
             }

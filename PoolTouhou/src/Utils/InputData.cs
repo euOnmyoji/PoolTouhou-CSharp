@@ -17,10 +17,14 @@ namespace PoolTouhou.Utils {
 
     public static class MoveUtil {
         public static float GetCoordinateDelta(ref MoveLocation move, float speed = 2) {
-            if (move > MoveLocation.LEFT_UP) {
-                return (float) (speed * Math.HALF_SQRT_TWO);
+            byte k = 0;
+            for (byte i = (byte)move; i > 0; i >>= 2) {
+                const byte checkValue = 0b11;
+                if ((i & checkValue) > 0) {
+                    ++k;
+                }
             }
-            return speed;
+            return k > 1 ? (float) (speed * Math.HALF_SQRT_TWO) : speed;
         }
     }
 
@@ -71,19 +75,25 @@ namespace PoolTouhou.Utils {
                 if (IsNoMove()) {
                     return MoveLocation.NONE;
                 }
-                if (up > down) {
-                    if (left > right) {
-                        return MoveLocation.LEFT_UP;
+                int x = up - down;
+                int y = left - right;
+                var result = MoveLocation.NONE;
+                if (x != 0) {
+                    if (x > 0 && down == 0 || x < 0 && up > 0) {
+                        result |= MoveLocation.UP;
+                    } else {
+                        result |= MoveLocation.DOWN;
                     }
-                    return left == right ? MoveLocation.UP : MoveLocation.RIGHT_UP;
                 }
-                if (up == down) {
-                    return left > right ? MoveLocation.LEFT : MoveLocation.RIGHT;
+
+                if (y != 0) {
+                    if (y > 0 && right == 0 || y < 0 && left > 0) {
+                        result |= MoveLocation.LEFT;
+                    } else {
+                        result |= MoveLocation.RIGHT;
+                    }
                 }
-                if (left > right) {
-                    return MoveLocation.LEFT_DOWN;
-                }
-                return left == right ? MoveLocation.DOWN : MoveLocation.RIGHT_DOWN;
+                return result;
             }
         }
 

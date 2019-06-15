@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="src\Bullets\IBullet.cs" />
+    <Compile Include="src\ConfigFile.cs" />
     <Compile Include="src\Device\DirectXResource.cs" />
     <Compile Include="src\GameObject\ICollidable.cs" />
     <Compile Include="src\GameObject\ILocateable.cs" />
