@@ -1,27 +1,66 @@
 using System;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Text;
+using System.Threading;
+using System.Windows.Forms;
 
 namespace PoolTouhou.Utils {
     public sealed class Logger {
-        private readonly StreamWriter writer;
+        private readonly ConcurrentQueue<string> queue = new ConcurrentQueue<string>();
 
+        private volatile bool running = true;
 
         public Logger() {
             var logStream = new FileStream("log.log", FileMode.Create, FileAccess.Write, FileShare.Read);
-            writer = new StreamWriter(logStream, Encoding.UTF8, 512) {AutoFlush = true};
+            var writer = new StreamWriter(logStream, Encoding.UTF8, 512) {AutoFlush = true};
+            var thread = new Thread(
+                () => {
+                    try {
+                        while (running) {
+                            while (queue.TryDequeue(out string s)) {
+                                writer.WriteLine(s);
+                            }
+                            lock (this) {
+                                if (queue.IsEmpty) {
+                                    Monitor.Wait(this,60 * 1000);
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        MessageBox.Show(e.Message + Environment.NewLine + e.StackTrace, @"很抱歉出错了！");
+                    }
+                }
+            ) {Name = "Logger IO",Priority = ThreadPriority.BelowNormal};
+            thread.Start();
         }
 
-        public async void Info(string msg) {
-            await writer.WriteLineAsync($"{DateTime.Now} {msg}");
+        public void Info(string msg) {
+            queue.Enqueue($"{DateTime.Now} {msg}");
+            lock (this) {
+                Monitor.Pulse(this);
+            }
         }
 
-        public async void MemoryLack(string msg) {
-            await writer.WriteLineAsync($"{DateTime.Now} {msg}");
+        public void MemoryLack(string msg) {
+            queue.Enqueue($"{DateTime.Now} {msg}");
+            lock (this) {
+                Monitor.Pulse(this);
+            }
         }
 
-        public async void LogException(Exception e) {
-            await writer.WriteLineAsync($"{DateTime.Now} {e.Message + Environment.NewLine + e.StackTrace}");
+        public void LogException(Exception e) {
+            queue.Enqueue($"{DateTime.Now} {e.Message + Environment.NewLine + e.StackTrace}");
+            lock (this) {
+                Monitor.Pulse(this);
+            }
+        }
+
+        public void StopLog() {
+            running = false;
+            lock (this) {
+                Monitor.Pulse(this);
+            }
         }
     }
 }

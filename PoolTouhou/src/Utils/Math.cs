@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using SharpDX.Mathematics.Interop;
 
 namespace PoolTouhou.Utils {
     public static class Math {
@@ -7,6 +8,14 @@ namespace PoolTouhou.Utils {
         /// </summary>
         public const double HALF_SQRT_TWO = 0.70710678118654752440084436210485;
 
+        public const double ONE_DEGREE = System.Math.PI / 180.0;
         public static readonly double ONE_MS_COUNT = Stopwatch.Frequency / 1000.0;
+
+
+        public static RawMatrix3x2 RotateMatrix(double degree, float x = 0, float y= 0) {
+            float sin = (float) System.Math.Sin(degree);
+            float cos = (float) System.Math.Cos(degree);
+            return new RawMatrix3x2(cos, sin, -sin, cos, x, y);
+        }
     }
 }

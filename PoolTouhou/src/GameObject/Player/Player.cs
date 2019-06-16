@@ -11,6 +11,7 @@ namespace PoolTouhou.GameObject.Player {
         public byte spell = 3;
         public short dying = -1;
         public short spelling = -1;
+        public bool slow = false;
         public abstract void Update(ref InputData input);
         public abstract void Draw(RenderTarget renderTarget);
         public abstract bool IsCollided(ICollidable that);

@@ -57,6 +57,8 @@ namespace PoolTouhou {
             Application.Run(MainForm);
             Dispose();
             Logger.Info("回收资源 退出主线程");
+            GC.Collect();
+            Logger.StopLog();
             return 0;
         }
 
