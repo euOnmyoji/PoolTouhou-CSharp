@@ -164,6 +164,8 @@ namespace PoolTouhou.GameStates {
 
 
         public override void Dispose() {
+            loadingMap?.Dispose();
+            background?.Dispose();
         }
     }
 }

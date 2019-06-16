@@ -85,10 +85,13 @@ namespace PoolTouhou.Sound {
         public void Loop(string name, int count = XAudio2.MaximumLoopCount) {
             try {
                 var data = voices[name];
-                data.buffer.LoopCount = count;
-                data.voice.FlushSourceBuffers();
-                data.voice.SubmitSourceBuffer(data.buffer, data.decodedPacketsInfo);
-                data.voice.Start();
+                if (!data.looping) {
+                    data.looping = true;
+                    data.buffer.LoopCount = count;
+                    data.voice.FlushSourceBuffers();
+                    data.voice.SubmitSourceBuffer(data.buffer, data.decodedPacketsInfo);
+                    data.voice.Start();
+                }
             } catch (Exception e) {
                 PoolTouhou.Logger.LogException(e);
             }
@@ -100,6 +103,7 @@ namespace PoolTouhou.Sound {
         public SourceVoice voice;
         public WaveFormat format;
         public uint[] decodedPacketsInfo;
+        public bool looping;
 
         public void Dispose() {
             voice?.DestroyVoice();
@@ -114,11 +118,14 @@ namespace PoolTouhou.Sound {
         public static SoundData GetWavSoundStream(FileStream fs) {
             var ss = new SoundStream(fs);
             ss.Seek(0,SeekOrigin.Begin);
-            return new SoundData {
+            var soundData = new SoundData {
                 voice = new SourceVoice(PoolTouhou.SoundManager.xAudio2, ss.Format, false),
                 buffer = new AudioBuffer(ss),
                 decodedPacketsInfo = ss.DecodedPacketsInfo,
+                looping = false
             };
+            soundData.voice.LoopEnd += ptr => soundData.looping = false;
+            return soundData;
         }
 
         public static SoundData GetMp3SoundStream(FileStream fs) {
@@ -139,11 +146,15 @@ namespace PoolTouhou.Sound {
                 data.Write(temp, 0, len);
             }
             data.Seek(0, SeekOrigin.Begin);
-            return new SoundData {
+
+            var soundData =  new SoundData {
                 voice = new SourceVoice(PoolTouhou.SoundManager.xAudio2, format, false),
                 format = format,
                 buffer = new AudioBuffer(data),
+                looping = false
             };
+            soundData.voice.LoopEnd += ptr => soundData.looping = false;
+            return soundData;
         }
     }
 }

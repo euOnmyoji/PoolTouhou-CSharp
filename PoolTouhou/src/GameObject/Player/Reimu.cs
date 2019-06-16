@@ -25,7 +25,7 @@ namespace PoolTouhou.GameObject.Player {
 
         public Reimu(IGame g) {
             bullets = g.Bullets;
-            region = g.GameRegion;z
+            region = g.GameRegion;
             //image from J u e  Y i n g ()
             bitmap = Util.LoadBitMapFromFile("res/player/reimu1.png", PixelFormat.Format32bppPRGBA);
         }

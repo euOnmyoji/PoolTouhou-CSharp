@@ -20,20 +20,6 @@ namespace PoolTouhou {
         private SharpDX.DirectWrite.Factory textFactory;
         public TextFormat textFormat;
 
-        /// <summary>
-        /// 清理所有正在使用的资源。
-        /// </summary>
-        /// <param name="disposing">如果应释放托管资源，为 true；否则为 false。</param>
-        protected override void Dispose(bool disposing) {
-            if (disposing) {
-                running = false;
-                textFactory?.Dispose();
-                textFormat?.Dispose();
-                brush?.Dispose();
-            }
-
-            base.Dispose(disposing);
-        }
 
         private static double tps;
 
@@ -148,12 +134,10 @@ namespace PoolTouhou {
         }
 
         public MainForm() {
-            SuspendLayout();
             AutoScaleMode = AutoScaleMode.None;
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
             Name = @"MainForm";
-            ResumeLayout(false);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1600, 900);
             Size = new Size(1600, 900);
@@ -161,10 +145,18 @@ namespace PoolTouhou {
             Text = @"PoolTouhou";
         }
 
+        public new void Dispose() {
+            PoolTouhou.Logger.Info("开始释放窗口的托管资源");
+            running = false;
+            textFactory?.Dispose();
+            textFormat?.Dispose();
+            brush?.Dispose();
+        }
+
         protected override void OnKeyDown(KeyEventArgs e) {
             base.OnKeyDown(e);
             if (e.Shift) {
-                InputData.KEY_PRESSED.Add((int)Keys.Shift);
+                InputData.KEY_PRESSED.Add((int) Keys.Shift);
             }
             InputData.KEY_PRESSED.Add(e.KeyValue);
         }
@@ -172,7 +164,7 @@ namespace PoolTouhou {
         protected override void OnKeyUp(KeyEventArgs e) {
             base.OnKeyUp(e);
             if (!e.Shift) {
-                InputData.KEY_PRESSED.Remove((int)Keys.Shift);
+                InputData.KEY_PRESSED.Remove((int) Keys.Shift);
             }
             InputData.KEY_PRESSED.Remove(e.KeyValue);
         }

@@ -3,14 +3,13 @@ using System.IO;
 using System.Text;
 
 namespace PoolTouhou.Utils {
-    public sealed class Logger : IDisposable {
-        private readonly FileStream logStream;
+    public sealed class Logger {
         private readonly StreamWriter writer;
 
+
         public Logger() {
-            File.Delete("log.log");
-            logStream = new FileStream("log.log", FileMode.Append, FileAccess.Write, FileShare.Read);
-            writer = new StreamWriter(logStream, Encoding.UTF8, 32 * 1024);
+            var logStream = new FileStream("log.log", FileMode.Create, FileAccess.Write, FileShare.Read);
+            writer = new StreamWriter(logStream, Encoding.UTF8, 512) {AutoFlush = true};
         }
 
         public async void Info(string msg) {
@@ -23,12 +22,6 @@ namespace PoolTouhou.Utils {
 
         public async void LogException(Exception e) {
             await writer.WriteLineAsync($"{DateTime.Now} {e.Message + Environment.NewLine + e.StackTrace}");
-        }
-
-        public void Dispose() {
-            writer.Flush();
-            writer?.Dispose();
-            logStream?.Dispose();
         }
     }
 }

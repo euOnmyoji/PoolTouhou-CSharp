@@ -27,7 +27,10 @@ namespace PoolTouhou.Device {
 
         public RenderTarget RenderTarget {
             get => renderTarget;
-            private set => renderTarget = value;
+            private set {
+                renderTarget?.Dispose();
+                renderTarget = value;
+            }
         }
 
         internal DirectXResource() {
@@ -36,7 +39,8 @@ namespace PoolTouhou.Device {
             d2dFactory = new Factory();
             d3d11Device = new SharpDX.Direct3D11.Device(DriverType.Hardware, DeviceCreationFlags.BgraSupport);
             dxgiDevice = ComObject.As<SharpDX.DXGI.Device>(d3d11Device.NativePointer);
-            dxgiFactory = dxgiDevice.Adapter.GetParent<SharpDX.DXGI.Factory>();
+            using var adapter = dxgiDevice.Adapter;
+            dxgiFactory = adapter.GetParent<SharpDX.DXGI.Factory>();
             var swapChainDescription = new SwapChainDescription {
                 BufferCount = 1,
                 OutputHandle = form.Handle,
@@ -67,7 +71,7 @@ namespace PoolTouhou.Device {
                 Type = RenderTargetType.Default,
                 PixelFormat = pixelFormat
             };
-            var surface = swapChain.GetBackBuffer<Surface>(0);
+            using var surface = swapChain.GetBackBuffer<Surface>(0);
             renderTarget = new RenderTarget(d2dFactory, surface, prop);
         }
 

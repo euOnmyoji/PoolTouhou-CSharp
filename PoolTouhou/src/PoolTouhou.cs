@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using PoolTouhou.Device;
 using PoolTouhou.GameStates;
 using PoolTouhou.Sound;
+using PoolTouhou.UI.Buttons;
 using PoolTouhou.Utils;
 
 namespace PoolTouhou {
@@ -69,16 +70,16 @@ namespace PoolTouhou {
             DxResource = new DirectXResource();
             Logger.Info("初始化音频资源");
             SoundManager = new SoundManager();
-            Logger.Info("初始化游戏");
+            Logger.Info("初始化窗口类 & 游戏");
             MainForm.Init();
         }
 
         private static void Dispose() {
-            Logger?.Dispose();
             MainForm?.Dispose();
             SoundManager?.Dispose();
             DxResource?.Dispose();
             gameState?.Dispose();
+            ButtonsResources.INSTANCE?.Dispose();
         }
 
         private static GameState gameState;

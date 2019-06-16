@@ -6,15 +6,16 @@ using Bitmap = SharpDX.Direct2D1.Bitmap;
 using PixelFormat = SharpDX.WIC.PixelFormat;
 
 namespace PoolTouhou.UI.Buttons {
-    public class ButtonsResources {
+    public class ButtonsResources : IDisposable {
         public static readonly ButtonsResources INSTANCE = new ButtonsResources();
 
-        public readonly Bitmap title01 = Util.LoadBitMapFromFile(
-            @"res/title/title01.png",
-            PixelFormat.Format32bppPRGBA
-        );
+        public readonly Bitmap title01;
 
         private ButtonsResources() {
+            title01 = Util.LoadBitMapFromFile(
+                @"res/title/title01.png",
+                PixelFormat.Format32bppPRGBA
+            );
             PoolTouhou.SoundManager.Load(
                 @"selectButton",
                 @"res/SE/se_select00.mp3",
@@ -22,8 +23,8 @@ namespace PoolTouhou.UI.Buttons {
             );
         }
 
-        ~ButtonsResources() {
-            title01.Dispose();
+        public void Dispose() {
+            title01?.Dispose();
             PoolTouhou.SoundManager.Unload(@"selectButton");
             PoolTouhou.Logger.Info("释放按钮资源完成");
         }
