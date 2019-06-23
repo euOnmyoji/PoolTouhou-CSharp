@@ -129,20 +129,24 @@ namespace PoolTouhou.GameObject.Player {
                 1,
                 BitmapInterpolationMode.Linear
             );
-            double delta = Math.PI * ((Watch.ElapsedTicks - lastDrawTime) / (double) Stopwatch.Frequency);
-            using var mapRt = new BitmapRenderTarget(renderTarget, CompatibleRenderTargetOptions.None) {
-                Transform = RotateMatrix(delta)
-            };
-            mapRt.BeginDraw();
-            mapRt.DrawBitmap(child, new RawRectangleF(-8, -8, 8, 8), 1, BitmapInterpolationMode.Linear);
-            mapRt.EndDraw();
+            double delta = 0;
+            if (lastDrawTime == 0) {
+                lastDrawTime = Watch.ElapsedTicks;
+            } else {
+                delta = Math.PI * ((Watch.ElapsedTicks - lastDrawTime) / (double) Stopwatch.Frequency);
+            }
+//            using var mapRt = new BitmapRenderTarget(renderTarget, CompatibleRenderTargetOptions.None) {
+//                Transform = RotateMatrix(delta)
+//            };
+//            mapRt.BeginDraw();
+//            mapRt.DrawBitmap(child, new RawRectangleF(-8, -8, 8, 8), 1, BitmapInterpolationMode.Linear);
+//            mapRt.EndDraw();
 //            child.CopyFromRenderTarget(mapRt, new RawPoint(0, 0), new RawRectangle(0, 0, 16, 16));
-
+            renderTarget.Transform = RotateMatrix(delta, x, y - 48);
             for (int i = 0; i < power / 100; ++i) {
                 children[i].Draw(renderTarget);
             }
-
-            lastDrawTime = Watch.ElapsedTicks;
+            renderTarget.Transform = RotateMatrix(0);
         }
 
         private struct Child {
@@ -163,7 +167,8 @@ namespace PoolTouhou.GameObject.Player {
             public void Draw(RenderTarget renderTarget) {
                 renderTarget.DrawBitmap(
                     reimu.child,
-                    new RawRectangleF(reimu.x - 8, reimu.y - 48, reimu.x + 8, reimu.y - 32),
+//                    new RawRectangleF(reimu.x - 8, reimu.y - 48, reimu.x + 8, reimu.y - 32),
+                    new RawRectangleF(-8, -8, 8, 8),
                     1,
                     BitmapInterpolationMode.Linear,
                     new RawRectangleF(0, 0, 16, 16)

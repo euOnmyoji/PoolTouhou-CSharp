@@ -111,7 +111,7 @@ namespace PoolTouhou {
                         );
                     }
                     renderTarget.EndDraw();
-                    DxResource.swapChain.Present(1, PresentFlags.None);
+                    DxResource.swapChain.Present(0, PresentFlags.None);
                 }
             } catch (Exception e) {
                 PoolTouhou.Logger.Info(e.Message + Environment.NewLine + e.StackTrace);
