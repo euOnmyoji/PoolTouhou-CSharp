@@ -16,6 +16,7 @@ packages
 *.gif
 *.wav
 *.mp3
+*.psd
 
 #for logs
 *.log
