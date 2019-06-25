@@ -11,6 +11,8 @@ namespace PoolTouhou.Utils {
 
         private volatile bool running = true;
 
+        private volatile uint lackCount;
+
         public Logger() {
             var logStream = new FileStream("log.log", FileMode.Create, FileAccess.Write, FileShare.Read);
             var writer = new StreamWriter(logStream, Encoding.UTF8, 512) {AutoFlush = true};
@@ -23,7 +25,7 @@ namespace PoolTouhou.Utils {
                             }
                             lock (this) {
                                 if (queue.IsEmpty) {
-                                    Monitor.Wait(this,60 * 1000);
+                                    Monitor.Wait(this, 60 * 1000);
                                 }
                             }
                         }
@@ -31,7 +33,7 @@ namespace PoolTouhou.Utils {
                         MessageBox.Show(e.Message + Environment.NewLine + e.StackTrace, @"很抱歉出错了！");
                     }
                 }
-            ) {Name = "Logger IO",Priority = ThreadPriority.BelowNormal};
+            ) {Name = "Logger IO", Priority = ThreadPriority.BelowNormal};
             thread.Start();
         }
 
@@ -43,9 +45,25 @@ namespace PoolTouhou.Utils {
         }
 
         public void MemoryLack(string msg) {
-            queue.Enqueue($"{DateTime.Now} {msg}");
-            lock (this) {
-                Monitor.Pulse(this);
+            uint excepted = lackCount;
+            while (excepted != lackCount++) {
+                excepted = lackCount;
+            }
+            byte oneS = 0;
+            excepted >>= 1;
+            while (excepted > 0) {
+                if ((excepted & 1) != 0) {
+                    if (++oneS > 1) {
+                        break;
+                    }
+                }
+                excepted >>= 1;
+            }
+            if (oneS == 1) {
+                queue.Enqueue($"{DateTime.Now} {msg} and {lackCount} objects has been lacked!");
+                lock (this) {
+                    Monitor.Pulse(this);
+                }
             }
         }
 

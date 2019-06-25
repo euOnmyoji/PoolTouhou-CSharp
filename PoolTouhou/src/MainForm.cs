@@ -12,6 +12,7 @@ using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
 using static PoolTouhou.PoolTouhou;
 using Brush = SharpDX.Direct2D1.Brush;
+using Math = System.Math;
 
 namespace PoolTouhou {
     public sealed class MainForm : Form {
@@ -83,6 +84,7 @@ namespace PoolTouhou {
                         string fpsStr = $"{fps:F1}fps";
                         const float textHeight = FONT_SIZE * 1.25f;
                         float lnLocationY = size.Height - textHeight;
+                        renderTarget.Transform = new RawMatrix3x2(1, 0, 0, 1, 0, 0);
                         renderTarget.DrawText(
                             fpsStr,
                             textFormat,
@@ -111,7 +113,7 @@ namespace PoolTouhou {
                         );
                     }
                     renderTarget.EndDraw();
-                    DxResource.swapChain.Present(0, PresentFlags.None);
+                    DxResource.swapChain.Present(1, PresentFlags.None);
                 }
             } catch (Exception e) {
                 PoolTouhou.Logger.Info(e.Message + Environment.NewLine + e.StackTrace);

@@ -146,7 +146,7 @@ namespace PoolTouhou.GameObject.Player {
             for (int i = 0; i < power / 100; ++i) {
                 children[i].Draw(renderTarget);
             }
-            renderTarget.Transform = RotateMatrix(0);
+            renderTarget.Transform = RotateMatrix(0,0,0);
         }
 
         private struct Child {
