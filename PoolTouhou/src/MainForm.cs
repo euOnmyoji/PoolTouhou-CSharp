@@ -12,7 +12,6 @@ using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
 using static PoolTouhou.PoolTouhou;
 using Brush = SharpDX.Direct2D1.Brush;
-using Math = System.Math;
 
 namespace PoolTouhou {
     public sealed class MainForm : Form {

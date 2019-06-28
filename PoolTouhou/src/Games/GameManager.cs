@@ -17,7 +17,7 @@ namespace PoolTouhou.Games {
     public interface IGame : IDrawable, IUpdateable, IDisposable {
         string Name { get; }
 
-        ICollection<IBullet> Bullets { get; }
+        ICollection<BulletBase> Bullets { get; }
 
         Random Random { get; }
 

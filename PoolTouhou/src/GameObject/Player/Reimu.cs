@@ -4,7 +4,6 @@ using System.Drawing;
 using PoolTouhou.Bullets;
 using PoolTouhou.Games;
 using PoolTouhou.Utils;
-using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.Mathematics.Interop;
 using static PoolTouhou.PoolTouhou;
@@ -28,7 +27,7 @@ namespace PoolTouhou.GameObject.Player {
         private short power = 100;
         private readonly Bitmap bitmap;
         private readonly Bitmap child;
-        private readonly ICollection<IBullet> bullets;
+        private readonly ICollection<BulletBase> bullets;
         private readonly GameRegion region;
 
         private Child[] children;
@@ -135,18 +134,11 @@ namespace PoolTouhou.GameObject.Player {
             } else {
                 delta = Math.PI * ((Watch.ElapsedTicks - lastDrawTime) / (double) Stopwatch.Frequency);
             }
-//            using var mapRt = new BitmapRenderTarget(renderTarget, CompatibleRenderTargetOptions.None) {
-//                Transform = RotateMatrix(delta)
-//            };
-//            mapRt.BeginDraw();
-//            mapRt.DrawBitmap(child, new RawRectangleF(-8, -8, 8, 8), 1, BitmapInterpolationMode.Linear);
-//            mapRt.EndDraw();
-//            child.CopyFromRenderTarget(mapRt, new RawPoint(0, 0), new RawRectangle(0, 0, 16, 16));
             renderTarget.Transform = RotateMatrix(delta, x, y - 48);
             for (int i = 0; i < power / 100; ++i) {
                 children[i].Draw(renderTarget);
             }
-            renderTarget.Transform = RotateMatrix(0,0,0);
+            renderTarget.Transform = RotateMatrix(0, 0, 0);
         }
 
         private struct Child {
@@ -196,7 +188,7 @@ namespace PoolTouhou.GameObject.Player {
     }
 
 
-    public class ReimuMagicPin : IBullet {
+    public class ReimuMagicPin : BulletBase {
         private float x;
         private float y;
 
@@ -205,20 +197,36 @@ namespace PoolTouhou.GameObject.Player {
             this.y = y;
         }
 
-        public bool IsCollided(ICollidable that) {
+        public override bool IsCollided(ICollidable that) {
             return false;
         }
 
-        public ICollection<IBoundingBox> BoundingBoxes => null;
+        public override ICollection<IBoundingBox> BoundingBoxes => null;
 
-        public void Draw(RenderTarget renderTarget) {
+        public override void Draw(RenderTarget renderTarget) {
             using var brush = new SolidColorBrush(DxResource.RenderTarget, new RawColor4(0.5f, 0.125f, 0.125f, 1));
             renderTarget.FillRectangle(new RawRectangleF(x - 3, y - 5, x + 3, y + 5), brush);
         }
 
-        public void Update(ref InputData input) {
+        public override void Update(ref InputData input) {
             y -= 10;
+            dead = y < GameState.game.GameRegion.minY;
         }
+
+        public override float X {
+            get => x;
+            set => x = value;
+        }
+
+        public override float Y {
+            get => x;
+            set => x = value;
+        }
+
+        public override float Ax { get; set; }
+        public override float Ay { get; set; }
+        public override float Vx { get; set; }
+        public override float Vy { get; set; }
 
         public PointF Point {
             get => new PointF(x, y);
@@ -227,7 +235,5 @@ namespace PoolTouhou.GameObject.Player {
                 y = value.Y;
             }
         }
-
-        public bool IsDead => y < GameState.game.GameRegion.minY;
     }
 }

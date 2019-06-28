@@ -6,7 +6,7 @@ using PoolTouhou.Utils;
 using SharpDX.Direct2D1;
 
 namespace PoolTouhou.GameObject.Player {
-    public abstract class Player : ICollidable, IUpdateable, IDrawable, ILocateable, IDisposable {
+    public abstract class Player : ICollidable, IUpdateable, IDrawable, IDisposable {
         public byte life = 2;
         public byte spell = 3;
         public short dying = -1;

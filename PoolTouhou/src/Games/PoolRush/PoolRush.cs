@@ -1,34 +1,26 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using PoolTouhou.Bullets;
 using PoolTouhou.GameObject.Player;
 using PoolTouhou.Utils;
-using SharpDX;
 using SharpDX.Direct2D1;
-using SharpDX.Direct3D11;
-using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
-using SharpDX.WIC;
+using static System.Math;
 using static PoolTouhou.PoolTouhou;
-using AlphaMode = SharpDX.Direct2D1.AlphaMode;
 using Bitmap = SharpDX.Direct2D1.Bitmap;
 using BitmapInterpolationMode = SharpDX.Direct2D1.BitmapInterpolationMode;
-using BitmapRenderTarget = SharpDX.DirectWrite.BitmapRenderTarget;
-using FillMode = SharpDX.Direct2D1.FillMode;
-using Math = System.Math;
 using PixelFormat = SharpDX.WIC.PixelFormat;
 
 namespace PoolTouhou.Games.PoolRush {
     public class PoolRush : IGame {
         private Player player;
-        private readonly Utils.LinkedList<IBullet> bullets = new Utils.LinkedList<IBullet>();
+        private readonly Utils.LinkedList<BulletBase> bullets = new Utils.LinkedList<BulletBase>();
 
         private bool exit;
         private static readonly GameRegion gameRegion = new GameRegion(0, 1600, 0, 900);
         public string Name => @"PoolRush";
-        public ICollection<IBullet> Bullets => bullets;
+        public ICollection<BulletBase> Bullets => bullets;
         public Random Random { get; } = new Random();
 
         private Bitmap zzzz;
@@ -43,7 +35,7 @@ namespace PoolTouhou.Games.PoolRush {
             if (firstDrawTime == 0) {
                 firstDrawTime = Watch.ElapsedTicks;
             } else {
-                delta = Math.PI * ((Watch.ElapsedTicks - firstDrawTime) * 0.5 / Stopwatch.Frequency);
+                delta = PI * ((Watch.ElapsedTicks - firstDrawTime) * 0.5 / Stopwatch.Frequency) % (PI * 2);
             }
             while (bulletNode != null) {
                 var bullet = bulletNode.value;
@@ -61,20 +53,36 @@ namespace PoolTouhou.Games.PoolRush {
 
             using var pathGeom = new PathGeometry(DxResource.d2dFactory);
             using var sink = pathGeom.Open();
-            const double degree = Math.PI / 5.0;
+            const double degree = PI / 2.5;
             var points = new (double x, double y)[5];
-            points[0] = (0, 1);
+            points[0] = (0, 50);
             for (int i = 1; i < 5; ++i) {
-                points[i] = (Utils.Math.RotatePoint(degree * i, 0, 1));
+                points[i] = Utils.Math.RotatePoint(degree * i, 0, 50);
             }
-            sink.SetFillMode(FillMode.Winding);
-            sink.BeginFigure(new RawVector2(0, 0), FigureBegin.Filled);
-            sink.AddLine(new RawVector2((float) (points[1].x - points[3].x), (float) (points[1].y - points[3].y)));
+            sink.BeginFigure(new RawVector2((float) points[3].x, (float) points[3].y), FigureBegin.Hollow);
+            sink.AddLine(new RawVector2((float) points[1].x, (float) points[1].y));
+            sink.AddLine(new RawVector2((float) points[4].x, (float) points[4].y));
+            sink.AddLine(new RawVector2((float) points[2].x, (float) points[2].y));
+            sink.AddLine(new RawVector2((float) points[0].x, (float) points[0].y));
             sink.EndFigure(FigureEnd.Closed);
+            sink.BeginFigure(new RawVector2(0, 50), FigureBegin.Hollow);
+            sink.EndFigure(FigureEnd.Closed);
+            using var brush = new SolidColorBrush(renderTarget, new RawColor4(1, 0, 0, 1));
+            double magic;
+
+            if (delta > PI) {
+                magic = 2 * PI - delta;
+            } else {
+                magic = delta + PI * 0.5;
+            }
+            float xS = (float) (magic / PI);
+            float yS = 2 - xS;
+            renderTarget.Transform = Utils.Math.RotateMatrix(delta, 700, 200, xS * 2, yS * 2);
             sink.Dispose();
-            using var brush = new SolidColorBrush(renderTarget, new RawColor4(0.25f, 0.25f, 0.125f, 1));
-            renderTarget.Transform = Utils.Math.RotateMatrix(delta, 700, 200, 100, 100);
-            renderTarget.DrawGeometry(pathGeom, brush, 1);
+            using var geom = new TransformedGeometry(DxResource.d2dFactory, pathGeom, Utils.Math.RotateMatrix(0, 0, 0));
+            renderTarget.DrawGeometry(geom, brush);
+            var ellipse = new Ellipse(new RawVector2(0, 0), 50, 50);
+            renderTarget.DrawEllipse(ellipse, brush);
             renderTarget.Flush();
             renderTarget.Transform = Utils.Math.RotateMatrix(0, 0, 0);
         }
@@ -91,7 +99,7 @@ namespace PoolTouhou.Games.PoolRush {
                 if (bullet.IsCollided(player)) {
                     player.dying = 30;
                 }
-                if (bullet.IsDead) {
+                if (bullet.dead) {
                     bulletNode.Remove();
                 }
                 bulletNode = bulletNode.Next;
