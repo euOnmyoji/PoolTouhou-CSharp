@@ -16,7 +16,7 @@ namespace PoolTouhou.Bullets {
             }
 
             public override ICollection<IBoundingBox> BoundingBoxes { get; }
-            public override void Draw(RenderTarget renderTarget) {
+            public override void Draw(DeviceContext renderTarget) {
                 throw new System.NotImplementedException();
             }
 

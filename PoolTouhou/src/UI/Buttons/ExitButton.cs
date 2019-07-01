@@ -10,7 +10,7 @@ namespace PoolTouhou.UI.Buttons {
         private static RawRectangleF selectedRf = new RawRectangleF(0, 140, dx, 140 + dy);
         private static RawRectangleF unselectedRf = new RawRectangleF(128, 140, 128 + dx, 140 + dy);
 
-        public override void Draw(RenderTarget renderTarget) {
+        public override void Draw(DeviceContext renderTarget) {
             var size = renderTarget.Size;
             float xScala = size.Width / 640;
             float yScala = size.Height / 480;

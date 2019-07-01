@@ -8,7 +8,7 @@ namespace PoolTouhou.GameStates {
             game.Load();
         }
 
-        public override void Draw(RenderTarget renderTarget) {
+        public override void Draw(DeviceContext renderTarget) {
             game.Draw(renderTarget);
         }
 

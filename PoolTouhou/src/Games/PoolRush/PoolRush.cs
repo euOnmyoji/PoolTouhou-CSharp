@@ -27,15 +27,16 @@ namespace PoolTouhou.Games.PoolRush {
         private long firstDrawTime;
 
 
-        public void Draw(RenderTarget renderTarget) {
-            renderTarget.Clear(null);
+        public void Draw(DeviceContext renderTarget) {
+            using var factory = renderTarget.Factory;
+            renderTarget.Clear(new RawColor4(0.125f, 0.125f, 0.125f, 1));
             player.Draw(renderTarget);
             var bulletNode = bullets.Header;
             double delta = 0;
             if (firstDrawTime == 0) {
                 firstDrawTime = Watch.ElapsedTicks;
             } else {
-                delta = PI * ((Watch.ElapsedTicks - firstDrawTime) * 0.5 / Stopwatch.Frequency) % (PI * 2);
+                delta = PI * ((Watch.ElapsedTicks - firstDrawTime) * 0.5 / Stopwatch.Frequency);
             }
             while (bulletNode != null) {
                 var bullet = bulletNode.value;
@@ -51,7 +52,7 @@ namespace PoolTouhou.Games.PoolRush {
             );
             renderTarget.DrawBitmap(zzzz, new RawRectangleF(-64, -64, 64, 64), 1, BitmapInterpolationMode.Linear);
 
-            using var pathGeom = new PathGeometry(DxResource.d2dFactory);
+            using var pathGeom = new PathGeometry(factory);
             using var sink = pathGeom.Open();
             const double degree = PI / 2.5;
             var points = new (double x, double y)[5];
@@ -68,23 +69,46 @@ namespace PoolTouhou.Games.PoolRush {
             sink.BeginFigure(new RawVector2(0, 50), FigureBegin.Hollow);
             sink.EndFigure(FigureEnd.Closed);
             using var brush = new SolidColorBrush(renderTarget, new RawColor4(1, 0, 0, 1));
-            double magic;
+            double magic = delta % (PI * 2);
 
-            if (delta > PI) {
-                magic = 2 * PI - delta;
+            if (magic > PI) {
+                magic = 2 * PI - magic;
             } else {
-                magic = delta + PI * 0.5;
+                magic = magic + PI * 0.5;
             }
             float xS = (float) (magic / PI);
             float yS = 2 - xS;
             renderTarget.Transform = Utils.Math.RotateMatrix(delta, 700, 200, xS * 2, yS * 2);
             sink.Dispose();
-            using var geom = new TransformedGeometry(DxResource.d2dFactory, pathGeom, Utils.Math.RotateMatrix(0, 0, 0));
+            using var geom = new TransformedGeometry(factory, pathGeom, Utils.Math.RotateMatrix(0, 0, 0));
             renderTarget.DrawGeometry(geom, brush);
             var ellipse = new Ellipse(new RawVector2(0, 0), 50, 50);
             renderTarget.DrawEllipse(ellipse, brush);
-            renderTarget.Flush();
+//            renderTarget.Flush();
             renderTarget.Transform = Utils.Math.RotateMatrix(0, 0, 0);
+            using var biu = new SolidColorBrush(renderTarget, new RawColor4(0.25f, 0.25f, 0, 0.5f));
+            var effect = new Effect(renderTarget, Effect.Blend);
+            renderTarget.FillEllipse(
+                new Ellipse(new RawVector2(600, 400), (float) delta * 100, (float) delta * 100),
+                biu
+            );
+            renderTarget.FillEllipse(
+                new Ellipse(new RawVector2(550, 400), (float) delta * 50, (float) delta * 50),
+                biu
+            );
+            renderTarget.FillEllipse(
+                new Ellipse(new RawVector2(650, 400), (float) delta * 50, (float) delta * 50),
+                biu
+            );
+            renderTarget.FillEllipse(
+                new Ellipse(new RawVector2(600, 350), (float) delta * 50, (float) delta * 50),
+                biu
+            );
+            renderTarget.FillEllipse(
+                new Ellipse(new RawVector2(600, 450), (float) delta * 50, (float) delta * 50),
+                biu
+            );
+//            context.OutputMerger.SetBlendState(old, oldColor4, oldSampleMask);
         }
 
         public void Update(ref InputData input) {
@@ -120,6 +144,7 @@ namespace PoolTouhou.Games.PoolRush {
 
         public void Dispose() {
             exit = false;
+            firstDrawTime = 0;
             SoundManager.Unload("bgmtest");
         }
     }

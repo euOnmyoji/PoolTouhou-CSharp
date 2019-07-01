@@ -45,7 +45,7 @@ namespace PoolTouhou.UI.Buttons {
             selectTime = null;
         }
 
-        public abstract void Draw(RenderTarget renderTarget);
+        public abstract void Draw(DeviceContext renderTarget);
 
         protected static void GetOffset(double ms, out int x, out int y) {
             //16.666666666 ms ≈ 1tick

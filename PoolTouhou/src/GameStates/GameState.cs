@@ -13,7 +13,7 @@ namespace PoolTouhou.GameStates {
         }
 
         public abstract string GetStateName();
-        public abstract void Draw(RenderTarget renderTarget);
+        public abstract void Draw(DeviceContext renderTarget);
         public abstract void Update(ref InputData input);
         public abstract void Dispose();
     }

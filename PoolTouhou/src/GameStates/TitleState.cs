@@ -24,7 +24,7 @@ namespace PoolTouhou.GameStates {
             );
         }
 
-        public override void Draw(RenderTarget target) {
+        public override void Draw(DeviceContext target) {
             uis[cur].Draw(target);
         }
 
@@ -100,7 +100,7 @@ namespace PoolTouhou.GameStates {
             ).Start();
         }
 
-        public override void Draw(RenderTarget target) {
+        public override void Draw(DeviceContext target) {
             //loading won't last long?
             float ms = (float) DateTime.Now.Subtract(start).TotalMilliseconds;
             if (ms > 2000) {

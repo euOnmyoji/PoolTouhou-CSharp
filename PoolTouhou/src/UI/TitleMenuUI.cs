@@ -9,7 +9,7 @@ namespace PoolTouhou.UI {
         private readonly Button[] buttons = {new GameStartButton(), new ExitButton()};
         private int curSelect;
 
-        public void Draw(RenderTarget target) {
+        public void Draw(DeviceContext target) {
             target.Clear(null);
             foreach (var button in buttons) {
                 button.Draw(target);

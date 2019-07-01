@@ -13,7 +13,7 @@ namespace PoolTouhou.UI.Buttons {
             selectTime = DateTime.Now.AddSeconds(-10);
         }
 
-        public override void Draw(RenderTarget renderTarget) {
+        public override void Draw(DeviceContext renderTarget) {
             var size = renderTarget.Size;
             float xScala = size.Width / 640;
             float yScala = size.Height / 480;

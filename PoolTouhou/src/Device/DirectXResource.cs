@@ -5,16 +5,18 @@ using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 using AlphaMode = SharpDX.Direct2D1.AlphaMode;
+using DeviceContext = SharpDX.Direct2D1.DeviceContext;
 using Factory = SharpDX.Direct2D1.Factory;
 using FeatureLevel = SharpDX.Direct2D1.FeatureLevel;
 
 namespace PoolTouhou.Device {
     public class DirectXResource : IDisposable {
-        public readonly Factory d2dFactory;
-        public readonly SharpDX.DXGI.Factory dxgiFactory;
-        public readonly SharpDX.Direct3D11.Device d3d11Device;
-        public readonly SharpDX.DXGI.Device dxgiDevice;
-        public readonly SwapChain swapChain;
+        public Factory d2dFactory;
+        public SharpDX.DXGI.Factory dxgiFactory;
+        public SharpDX.Direct3D11.Device d3d11Device;
+        public SharpDX.DXGI.Device dxgiDevice;
+        public SwapChain swapChain;
+        public SharpDX.Direct2D1.Device d2dDevice;
 
         public void Dispose() {
             d2dFactory?.Dispose();
@@ -23,9 +25,10 @@ namespace PoolTouhou.Device {
             dxgiDevice?.Dispose();
             swapChain?.Dispose();
             renderTarget?.Dispose();
+            d2dDevice?.Dispose();
         }
 
-        public RenderTarget RenderTarget {
+        public DeviceContext RenderTarget {
             get => renderTarget;
             private set {
                 renderTarget?.Dispose();
@@ -39,6 +42,7 @@ namespace PoolTouhou.Device {
             d2dFactory = new Factory();
             d3d11Device = new SharpDX.Direct3D11.Device(DriverType.Hardware, DeviceCreationFlags.BgraSupport);
             dxgiDevice = ComObject.As<SharpDX.DXGI.Device>(d3d11Device.NativePointer);
+            d2dDevice = new SharpDX.Direct2D1.Device(dxgiDevice);
             using var adapter = dxgiDevice.Adapter;
             dxgiFactory = adapter.GetParent<SharpDX.DXGI.Factory>();
             var swapChainDescription = new SwapChainDescription {
@@ -72,10 +76,10 @@ namespace PoolTouhou.Device {
                 PixelFormat = pixelFormat
             };
             using var surface = swapChain.GetBackBuffer<Surface>(0);
-            renderTarget = new RenderTarget(d2dFactory, surface, prop);
+            renderTarget = new DeviceContext(surface);
         }
 
 
-        private RenderTarget renderTarget;
+        private DeviceContext renderTarget;
     }
 }

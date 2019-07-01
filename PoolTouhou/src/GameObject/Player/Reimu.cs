@@ -121,7 +121,7 @@ namespace PoolTouhou.GameObject.Player {
             }
         }
 
-        public override void Draw(RenderTarget renderTarget) {
+        public override void Draw(DeviceContext renderTarget) {
             renderTarget.DrawBitmap(
                 bitmap,
                 new RawRectangleF(x - dx, y - dy, x + dx, y + dy),
@@ -203,7 +203,7 @@ namespace PoolTouhou.GameObject.Player {
 
         public override ICollection<IBoundingBox> BoundingBoxes => null;
 
-        public override void Draw(RenderTarget renderTarget) {
+        public override void Draw(DeviceContext renderTarget) {
             using var brush = new SolidColorBrush(DxResource.RenderTarget, new RawColor4(0.5f, 0.125f, 0.125f, 1));
             renderTarget.FillRectangle(new RawRectangleF(x - 3, y - 5, x + 3, y + 5), brush);
         }

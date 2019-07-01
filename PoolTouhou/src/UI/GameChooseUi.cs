@@ -14,7 +14,7 @@ namespace PoolTouhou.UI {
             games = new List<IGame>(GameManager.RegisteredGames.Values);
         }
 
-        public void Draw(RenderTarget renderTarget) {
+        public void Draw(DeviceContext renderTarget) {
             if (games.Count > 1) {
                 renderTarget.Clear(null);
                 const float x = 0;

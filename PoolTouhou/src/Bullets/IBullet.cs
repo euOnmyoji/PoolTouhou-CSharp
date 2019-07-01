@@ -9,7 +9,7 @@ namespace PoolTouhou.Bullets {
         public bool dead = false;
         public abstract bool IsCollided(ICollidable that);
         public abstract ICollection<IBoundingBox> BoundingBoxes { get; }
-        public abstract void Draw(RenderTarget renderTarget);
+        public abstract void Draw(DeviceContext renderTarget);
         public abstract void Update(ref InputData input);
         public abstract float X { get; set; }
         public abstract float Y { get; set; }

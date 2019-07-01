@@ -69,6 +69,7 @@ namespace PoolTouhou {
                     var renderTarget = DxResource.RenderTarget;
                     renderTarget.BeginDraw();
                     PoolTouhou.GameState.Draw(renderTarget);
+                    renderTarget = DxResource.RenderTarget;
                     long now = Watch.ElapsedTicks;
                     long dur = now - last;
                     if (dur >= Stopwatch.Frequency) {
@@ -111,7 +112,7 @@ namespace PoolTouhou {
                             MeasuringMode.Natural
                         );
                     }
-                    renderTarget.EndDraw();
+                    DxResource.RenderTarget.TryEndDraw(out long tag1, out long tag2);
                     DxResource.swapChain.Present(1, PresentFlags.None);
                 }
             } catch (Exception e) {
