@@ -6,9 +6,15 @@
   &lt;Assembly Path="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.Windows.Forms.dll" /&gt;&#xD;
   &lt;Assembly Path="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\Microsoft.CSharp.dll" /&gt;&#xD;
   &lt;Assembly Path="I:\.nuget\Packages\sharpdx\4.2.0\lib\net45\SharpDX.dll" /&gt;&#xD;
+  &lt;Assembly Path="I:\.nuget\Packages\opengl.net.winforms\0.8.4\lib\net461\OpenGL.Net.WinForms.dll" /&gt;&#xD;
+  &lt;Assembly Path="I:\.nuget\Packages\opengl.net.coreprofile\0.8.4\lib\net461\OpenGL.Net-CoreProfile.dll" /&gt;&#xD;
+  &lt;Assembly Path="I:\.nuget\Packages\opengl.net.math\0.8.4\lib\net461\OpenGL.Net.Math.dll" /&gt;&#xD;
+  &lt;Assembly Path="I:\.nuget\Packages\glfw-net\3.3.1\lib\netstandard2.0\GLFW.NET.dll" /&gt;&#xD;
 &lt;/AssemblyExplorer&gt;</s:String>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=dxgi/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=FFIR/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=Khronos/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=OPENGL/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=submix/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=zzzz/@EntryIndexedValue">True</s:Boolean>
 	

@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using PoolTouhou.GameObject;
 using PoolTouhou.Utils;
-using SharpDX.Direct2D1;
 
 namespace PoolTouhou.Bullets {
     public static class BaseBullets {
@@ -16,7 +15,7 @@ namespace PoolTouhou.Bullets {
             }
 
             public override ICollection<IBoundingBox> BoundingBoxes { get; }
-            public override void Draw(DeviceContext renderTarget) {
+            public override void Draw(double deltaTime) {
                 throw new System.NotImplementedException();
             }
 

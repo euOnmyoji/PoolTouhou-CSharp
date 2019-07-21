@@ -1,6 +1,5 @@
 using PoolTouhou.Games;
 using PoolTouhou.Utils;
-using SharpDX.Direct2D1;
 
 namespace PoolTouhou.GameStates {
     public class GamingState : GameState {
@@ -8,8 +7,8 @@ namespace PoolTouhou.GameStates {
             game.Load();
         }
 
-        public override void Draw(DeviceContext renderTarget) {
-            game.Draw(renderTarget);
+        public override void Draw(double deltaTime) {
+            game.Draw(deltaTime);
         }
 
         public override void Update(ref InputData input) {

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using PoolTouhou.UI;
 using PoolTouhou.Utils;
-using SharpDX.Direct2D1;
 
 namespace PoolTouhou.GameObject.Player {
     public abstract class Player : ICollidable, IUpdateable, IDrawable, IDisposable {
@@ -13,7 +12,7 @@ namespace PoolTouhou.GameObject.Player {
         public short spelling = -1;
         public bool slow = false;
         public abstract void Update(ref InputData input);
-        public abstract void Draw(DeviceContext renderTarget);
+        public abstract void Draw(double deltaTime);
         public abstract bool IsCollided(ICollidable that);
         public abstract ICollection<IBoundingBox> BoundingBoxes { get; }
         public abstract PointF Point { get; set; }

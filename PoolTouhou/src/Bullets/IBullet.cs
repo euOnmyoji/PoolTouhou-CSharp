@@ -2,14 +2,13 @@ using System.Collections.Generic;
 using PoolTouhou.GameObject;
 using PoolTouhou.UI;
 using PoolTouhou.Utils;
-using SharpDX.Direct2D1;
 
 namespace PoolTouhou.Bullets {
     public abstract class BulletBase : ICollidable, IDrawable, IUpdateable, IMovable {
         public bool dead = false;
         public abstract bool IsCollided(ICollidable that);
         public abstract ICollection<IBoundingBox> BoundingBoxes { get; }
-        public abstract void Draw(DeviceContext renderTarget);
+        public abstract void Draw(double deltaTime);
         public abstract void Update(ref InputData input);
         public abstract float X { get; set; }
         public abstract float Y { get; set; }

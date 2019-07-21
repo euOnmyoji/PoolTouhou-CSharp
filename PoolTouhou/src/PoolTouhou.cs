@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Windows.Forms;
-using PoolTouhou.Device;
 using PoolTouhou.GameStates;
-using PoolTouhou.Sound;
 using PoolTouhou.UI.Buttons;
 using PoolTouhou.Utils;
 
@@ -21,7 +18,6 @@ namespace PoolTouhou {
             }
         }
 
-        public static DirectXResource DxResource { get; private set; }
 
         public static ushort Tps {
             get => tps;
@@ -34,7 +30,6 @@ namespace PoolTouhou {
 
         public static Stopwatch Watch { get; } = new Stopwatch();
         public static volatile bool running = true;
-        public static SoundManager SoundManager { get; private set; }
 
 
         /// <summary>
@@ -47,16 +42,17 @@ namespace PoolTouhou {
                 Logger = new Logger();
                 Init();
             } catch (Exception e) {
+                Logger.Info("初始化时发生异常");
                 Dispose();
                 Logger.Info(e.Message + Environment.NewLine + e.StackTrace);
-                MessageBox.Show(e.Message + Environment.NewLine + e.StackTrace, @"很抱歉出错了！");
-                Application.Exit();
+                Logger.StopLog();
                 return -1;
             }
             GC.Collect();
-            Application.Run(MainForm);
-            Dispose();
+            Logger.Info("游戏初始化完毕");
+            MainForm.Impl.RunMessageLoop();
             Logger.Info("回收资源 退出主线程");
+            Dispose();
             GC.Collect();
             Logger.StopLog();
             return 0;
@@ -66,20 +62,16 @@ namespace PoolTouhou {
         public static double OneTickCount { get; private set; } = (double) Stopwatch.Frequency / tps;
 
         private static void Init() {
-            Logger.Info("开始实例化游戏窗口类");
+            Logger.Info("开始实例化窗口类");
             MainForm = new MainForm();
             Logger.Info("初始化图形资源");
-            DxResource = new DirectXResource();
             Logger.Info("初始化音频资源");
-            SoundManager = new SoundManager();
             Logger.Info("初始化窗口类 & 游戏");
             MainForm.Init();
         }
 
         private static void Dispose() {
             MainForm?.Dispose();
-            SoundManager?.Dispose();
-            DxResource?.Dispose();
             gameState?.Dispose();
             ButtonsResources.INSTANCE?.Dispose();
         }

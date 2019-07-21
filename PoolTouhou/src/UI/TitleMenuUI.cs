@@ -1,7 +1,6 @@
 using System.Windows.Forms;
 using PoolTouhou.UI.Buttons;
 using PoolTouhou.Utils;
-using SharpDX.Direct2D1;
 using Button = PoolTouhou.UI.Buttons.Button;
 
 namespace PoolTouhou.UI {
@@ -9,10 +8,9 @@ namespace PoolTouhou.UI {
         private readonly Button[] buttons = {new GameStartButton(), new ExitButton()};
         private int curSelect;
 
-        public void Draw(DeviceContext target) {
-            target.Clear(null);
+        public void Draw(double deltaTime) {
             foreach (var button in buttons) {
-                button.Draw(target);
+                button.Draw(deltaTime);
             }
         }
 

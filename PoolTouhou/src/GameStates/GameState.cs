@@ -2,7 +2,6 @@
 using PoolTouhou.Games;
 using PoolTouhou.UI;
 using PoolTouhou.Utils;
-using SharpDX.Direct2D1;
 
 namespace PoolTouhou.GameStates {
     public abstract class GameState : IDrawable, IUpdateable, IDisposable {
@@ -13,7 +12,7 @@ namespace PoolTouhou.GameStates {
         }
 
         public abstract string GetStateName();
-        public abstract void Draw(DeviceContext renderTarget);
+        public abstract void Draw(double deltaTime);
         public abstract void Update(ref InputData input);
         public abstract void Dispose();
     }

@@ -9,6 +9,8 @@ packages
 #idea config
 .idea
 
+#lib
+lib
 
 #for art & sound
 *.jpg

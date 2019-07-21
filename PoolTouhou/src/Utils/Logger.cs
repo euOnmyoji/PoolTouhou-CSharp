@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using KhronosApi = Khronos.KhronosApi;
 
 namespace PoolTouhou.Utils {
     public sealed class Logger {
@@ -14,6 +15,11 @@ namespace PoolTouhou.Utils {
         private volatile uint lackCount;
 
         public Logger() {
+            KhronosApi.LogEnabled = true;
+            KhronosApi.Log += (sender, args) => {
+                Info(args.ToString());
+            };
+
             var logStream = new FileStream("log.log", FileMode.Create, FileAccess.Write, FileShare.Read);
             var writer = new StreamWriter(logStream, Encoding.UTF8, 512) {AutoFlush = true};
             var thread = new Thread(
@@ -25,7 +31,7 @@ namespace PoolTouhou.Utils {
                             }
                             lock (this) {
                                 if (queue.IsEmpty) {
-                                    Monitor.Wait(this, 60 * 1000);
+                                    Monitor.Wait(this, 5 * 1000);
                                 }
                             }
                         }
