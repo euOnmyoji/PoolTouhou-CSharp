@@ -28,7 +28,7 @@ namespace PoolTouhouFramework.Utils {
                             }
                         }
                     } catch (Exception e) {
-//                        MessageBox.Show(e.Message + Environment.NewLine + e.StackTrace, @"很抱歉出错了！");
+                        Console.WriteLine(e.Message + Environment.NewLine + e.StackTrace);
                     }
                 }
             ) {Name = "Logger IO", Priority = ThreadPriority.BelowNormal};
