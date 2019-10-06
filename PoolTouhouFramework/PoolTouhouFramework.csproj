@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.0</TargetFramework>
+        <RootNamespace>PoolTouhouFramework</RootNamespace>
+        <Configurations>Debug;Release</Configurations>
+        <PublishTrimming>true</PublishTrimming>
+        <Platforms>AnyCPU</Platforms>
+        <LangVersion>8</LangVersion>
+        <OutputType>WinExe</OutputType>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Veldrid" Version="4.7.0" />
+      <PackageReference Include="Veldrid.SDL2" Version="4.7.0" />
+      <PackageReference Include="Veldrid.SPIRV" Version="1.0.12" />
+      <PackageReference Include="Veldrid.Utilities" Version="4.7.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="src\Device" />
+      <Folder Include="src\Games\PoolRush\Stage" />
+    </ItemGroup>
+
+</Project>

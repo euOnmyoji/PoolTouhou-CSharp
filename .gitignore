@@ -1,0 +1,24 @@
+#vs and output files
+.vs
+Debug
+Release
+bin
+obj
+packages
+
+#idea config
+.idea
+
+#lib
+lib
+
+#for art & sound
+*.jpg
+*.png
+*.gif
+*.wav
+*.mp3
+*.psd
+
+#for logs
+*.log
