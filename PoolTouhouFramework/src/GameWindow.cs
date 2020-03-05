@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using PoolTouhouFramework.GameStates;
 using PoolTouhouFramework.Utils;
@@ -82,9 +81,10 @@ namespace PoolTouhouFramework {
                 50,
                 1600,
                 900,
-                SDL_WindowFlags.OpenGL | SDL_WindowFlags.AllowHighDpi,
+                SDL_WindowFlags.OpenGL | SDL_WindowFlags.AllowHighDpi | SDL_WindowFlags.Shown,
                 false
             );
+            window.Visible = true;
             device = OpenGlDeviceUtil.CreateDefaultOpenGlGraphicsDevice(window);
         }
 
