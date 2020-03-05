@@ -17,7 +17,7 @@ namespace PoolTouhouFramework.Utils {
                 () => {
                     int waitTimes = 0;
                     try {
-                        while (running || !queue.IsEmpty || waitTimes < 2) {
+                        while (running || !queue.IsEmpty || waitTimes < 3) {
                             while (queue.TryDequeue(out string s)) {
                                 Console.WriteLine(s);
                                 writer.WriteLine(s);
@@ -25,7 +25,7 @@ namespace PoolTouhouFramework.Utils {
                             }
                             lock (this) {
                                 if (queue.IsEmpty) {
-                                    Monitor.Wait(this, 5 * 1000);
+                                    Monitor.Wait(this, 1000);
                                     if (!running) { ++waitTimes; }
                                 }
                             }

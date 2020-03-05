@@ -44,12 +44,17 @@ namespace PoolTouhouFramework {
                 return -1;
             }
             GC.Collect();
-            Logger.Info("游戏初始化完毕");
-            GameWindow.RunMessageLoop();
-            Logger.Info("回收资源 退出主线程");
+            try {
+                Logger.Info("游戏初始化完毕");
+                GameWindow.RunMessageLoop();
+                Logger.Info("开始回收资源");
+            } catch (Exception e) {
+                Logger.Info(e.Message + Environment.NewLine + e.StackTrace);
+            }
             Dispose();
             GC.Collect();
             Logger.StopLog();
+            Logger.Info("退出主线程");
             return 0;
         }
 

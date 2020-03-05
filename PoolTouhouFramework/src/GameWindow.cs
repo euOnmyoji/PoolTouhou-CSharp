@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using PoolTouhouFramework.GameStates;
 using PoolTouhouFramework.Utils;
@@ -75,8 +76,8 @@ namespace PoolTouhouFramework {
         public GameWindow() {
             window = new Sdl2Window(
                 "PoolTouhou",
-                20,
-                20,
+                50,
+                50,
                 1600,
                 900,
                 SDL_WindowFlags.OpenGL | SDL_WindowFlags.AllowHighDpi,
@@ -94,8 +95,11 @@ namespace PoolTouhouFramework {
         public void RunMessageLoop() {
             while (window.Exists && running) {
                 var input = window.PumpEvents();
-
             }
+            if (window.Exists) {
+                PoolTouhou.Logger.Info("窗口不存在 退出消息循环");
+            }
+            running = false;
         }
     }
 }
