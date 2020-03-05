@@ -10,20 +10,23 @@ namespace PoolTouhouFramework.Utils {
 
         private volatile bool running = true;
 
-        public Logger() {
-            var logStream = new FileStream("log.log", FileMode.Create, FileAccess.Write, FileShare.Read);
+        public Logger(string fileName = "log.log") {
+            var logStream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Read);
             var writer = new StreamWriter(logStream, Encoding.UTF8, 512) {AutoFlush = true};
             var thread = new Thread(
                 () => {
+                    int waitTimes = 0;
                     try {
-                        while (running) {
+                        while (running || !queue.IsEmpty || waitTimes < 2) {
                             while (queue.TryDequeue(out string s)) {
                                 Console.WriteLine(s);
                                 writer.WriteLine(s);
+                                waitTimes = 0;
                             }
                             lock (this) {
                                 if (queue.IsEmpty) {
                                     Monitor.Wait(this, 5 * 1000);
+                                    if (!running) { ++waitTimes; }
                                 }
                             }
                         }
