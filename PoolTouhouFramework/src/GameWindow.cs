@@ -17,6 +17,7 @@ namespace PoolTouhouFramework {
         private static double tps;
 
         private static void UpdateLoop() {
+            PoolTouhou.Logger.Info("开始逻辑线程循环");
             try {
                 ushort tickCount = 0;
                 long last = Watch.ElapsedTicks;
@@ -53,6 +54,7 @@ namespace PoolTouhouFramework {
         }
 
         private void DrawLoop() {
+            PoolTouhou.Logger.Info("开始渲染线程循环");
             try {
                 while (window.Exists && running) {
                     OpenGLNative.glClear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
