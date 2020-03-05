@@ -22,3 +22,6 @@ lib
 
 #for logs
 *.log
+
+#?
+SteamApi/*.cs

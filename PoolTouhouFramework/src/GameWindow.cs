@@ -77,8 +77,8 @@ namespace PoolTouhouFramework {
                 "PoolTouhou",
                 20,
                 20,
-                800,
-                600,
+                1600,
+                900,
                 SDL_WindowFlags.OpenGL | SDL_WindowFlags.AllowHighDpi,
                 false
             );
@@ -94,6 +94,7 @@ namespace PoolTouhouFramework {
         public void RunMessageLoop() {
             while (window.Exists && running) {
                 var input = window.PumpEvents();
+
             }
         }
     }

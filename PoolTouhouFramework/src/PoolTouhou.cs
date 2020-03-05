@@ -57,6 +57,7 @@ namespace PoolTouhouFramework {
         public static double OneTickCount { get; private set; } = (double) Stopwatch.Frequency / tps;
 
         private static void Init() {
+            Logger.Info("something about steam...");
             Logger.Info("开始实例化窗口类");
             GameWindow = new GameWindow();
             Logger.Info("初始化图形资源");
