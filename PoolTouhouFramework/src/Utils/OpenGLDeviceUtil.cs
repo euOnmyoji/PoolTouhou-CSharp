@@ -18,7 +18,7 @@ namespace PoolTouhouFramework.Utils {
                 sync => Sdl2Native.SDL_GL_SetSwapInterval(sync ? 1 : 0)
             );
             return GraphicsDevice.CreateOpenGL(
-                new GraphicsDeviceOptions(false),
+                new GraphicsDeviceOptions(true),
                 platformInfo,
                 (uint) window.Width,
                 (uint) window.Height

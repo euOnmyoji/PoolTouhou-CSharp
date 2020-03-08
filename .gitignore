@@ -25,3 +25,7 @@ lib
 
 #?
 SteamApi/*.cs
+
+
+#personal file
+*.user

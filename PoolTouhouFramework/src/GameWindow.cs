@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading;
+using ImGuiNET;
 using PoolTouhouFramework.GameStates;
 using PoolTouhouFramework.Utils;
 using Veldrid;
@@ -16,7 +17,7 @@ namespace PoolTouhouFramework {
         private static double tps;
 
         private static void UpdateLoop() {
-            PoolTouhou.Logger.Info("开始逻辑线程循环");
+            PoolTouhou.Logger.Info("开始逻辑线程");
             try {
                 ushort tickCount = 0;
                 long last = Watch.ElapsedTicks;
@@ -55,8 +56,13 @@ namespace PoolTouhouFramework {
         private void DrawLoop() {
             PoolTouhou.Logger.Info("开始渲染线程循环");
             try {
+                long last = 0;
                 while (window.Exists && running) {
-                    OpenGLNative.glClear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+                    long now = Watch.ElapsedTicks;
+                    double delta = Stopwatch.Frequency / (double) (now - last);
+                    OpenGLNative.glClear(ClearBufferMask.ColorBufferBit);
+                    PoolTouhou.GameState.Draw(delta);
+                    last = now;
                 }
             } catch (Exception e) {
                 running = false;
@@ -83,19 +89,20 @@ namespace PoolTouhouFramework {
                 900,
                 SDL_WindowFlags.OpenGL | SDL_WindowFlags.AllowHighDpi | SDL_WindowFlags.Shown,
                 false
-            );
-            window.Visible = true;
+            ) {Visible = true};
             device = OpenGlDeviceUtil.CreateDefaultOpenGlGraphicsDevice(window);
         }
 
 
         public void Dispose() {
             PoolTouhou.Logger.Info("开始释放窗口的托管资源");
+            device?.Dispose();
             running = false;
         }
 
         public void RunMessageLoop() {
             while (window.Exists && running) {
+                Console.WriteLine("pump events");
                 var input = window.PumpEvents();
             }
             if (window.Exists) {

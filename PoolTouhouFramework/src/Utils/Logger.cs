@@ -19,7 +19,7 @@ namespace PoolTouhouFramework.Utils {
                     try {
                         while (running || !queue.IsEmpty || waitTimes < 3) {
                             while (queue.TryDequeue(out string s)) {
-                                Console.WriteLine(s);
+                                Console.WriteLine($"[PTH Logger]{s}");
                                 writer.WriteLine(s);
                                 waitTimes = 0;
                             }
