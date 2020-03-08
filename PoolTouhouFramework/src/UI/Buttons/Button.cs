@@ -15,7 +15,7 @@ namespace PoolTouhouFramework.UI.Buttons {
 
         public void Dispose() {
 //            PoolTouhou.SoundManager.Unload(@"selectButton");
-            PoolTouhou.Logger.Info("释放按钮资源完成");
+            PoolTouhou.Logger.Log("释放按钮资源完成");
         }
     }
 

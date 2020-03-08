@@ -5,8 +5,13 @@ using System.Text;
 using System.Threading;
 
 namespace PoolTouhouFramework.Utils {
+    public enum LogLevel : byte {
+        INFO = 0,
+        ERROR = 1
+    }
+
     public sealed class Logger {
-        private readonly ConcurrentQueue<string> queue = new ConcurrentQueue<string>();
+        private readonly ConcurrentQueue<(LogLevel, string)> queue = new ConcurrentQueue<(LogLevel, string)>();
 
         private volatile bool running = true;
 
@@ -18,8 +23,12 @@ namespace PoolTouhouFramework.Utils {
                     int waitTimes = 0;
                     try {
                         while (running || !queue.IsEmpty || waitTimes < 3) {
-                            while (queue.TryDequeue(out string s)) {
-                                Console.WriteLine($"[PTH Logger]{s}");
+                            while (queue.TryDequeue(out var s)) {
+                                if (s.Item1 == LogLevel.ERROR) {
+                                    Console.Error.WriteLine($"[Error]{s.Item2}");
+                                } else {
+                                    Console.WriteLine($"[{s.Item1}]{s.Item2}");
+                                }
                                 writer.WriteLine(s);
                                 waitTimes = 0;
                             }
@@ -38,8 +47,8 @@ namespace PoolTouhouFramework.Utils {
             thread.Start();
         }
 
-        public void Info(string msg) {
-            queue.Enqueue($"{DateTime.Now} {msg}");
+        public void Log(string msg, LogLevel level = LogLevel.INFO) {
+            queue.Enqueue((level, $"{DateTime.Now} {msg}"));
             lock (this) {
                 Monitor.Pulse(this);
             }

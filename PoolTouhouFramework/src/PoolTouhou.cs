@@ -37,24 +37,24 @@ namespace PoolTouhouFramework {
                 Logger = new Logger();
                 Init();
             } catch (Exception e) {
-                Logger.Info("初始化时发生异常");
-                Logger.Info(e.Message + Environment.NewLine + e.StackTrace);
+                Logger.Log("初始化时发生异常");
+                Logger.Log(e.Message + Environment.NewLine + e.StackTrace);
                 Dispose();
                 Logger.StopLog();
                 return -1;
             }
             GC.Collect();
             try {
-                Logger.Info("游戏初始化完毕");
+                Logger.Log("游戏初始化完毕");
                 GameWindow.RunMessageLoop();
-                Logger.Info("开始回收资源");
+                Logger.Log("开始回收资源");
             } catch (Exception e) {
-                Logger.Info(e.Message + Environment.NewLine + e.StackTrace);
+                Logger.Log(e.Message + Environment.NewLine + e.StackTrace);
             }
             Dispose();
             GC.Collect();
             Logger.StopLog();
-            Logger.Info("退出主线程");
+            Logger.Log("退出主线程");
             return 0;
         }
 
@@ -62,13 +62,13 @@ namespace PoolTouhouFramework {
         public static double OneTickCount { get; private set; } = (double) Stopwatch.Frequency / tps;
 
         private static void Init() {
-            Logger.Info("[TODO:something about steam...");
+            Logger.Log("[TODO:something about steam...");
             //todo: link steam in the future.
-            Logger.Info("开始实例化窗口类");
+            Logger.Log("开始实例化窗口类");
             GameWindow = new GameWindow();
-            Logger.Info("初始化图形资源");
-            Logger.Info("初始化音频资源");
-            Logger.Info("初始化窗口类 & 游戏");
+            Logger.Log("初始化图形资源");
+            Logger.Log("初始化音频资源");
+            Logger.Log("初始化窗口类 & 游戏");
             GameWindow.Init();
         }
 

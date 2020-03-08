@@ -1,10 +1,15 @@
+using System;
+using System.Diagnostics;
 using Veldrid;
 using Veldrid.OpenGL;
+using Veldrid.OpenGLBinding;
 using Veldrid.Sdl2;
 
 namespace PoolTouhouFramework.Utils {
-    public static class OpenGlDeviceUtil {
+    public static class GlUtil {
         public static GraphicsDevice CreateDefaultOpenGlGraphicsDevice(Sdl2Window window) {
+            SDL_SysWMinfo info;
+
             var sdlHandle = window.SdlWindowHandle;
             var contextHandle = Sdl2Native.SDL_GL_CreateContext(sdlHandle);
             var platformInfo = new OpenGLPlatformInfo(
@@ -23,6 +28,16 @@ namespace PoolTouhouFramework.Utils {
                 (uint) window.Width,
                 (uint) window.Height
             );
+        }
+
+        public static void CheckGlError() {
+            var code = (ErrorCode) OpenGLNative.glGetError();
+            if (code != ErrorCode.NoError) {
+                PoolTouhou.Logger.Log(
+                    $"GL HAS ERROR:{code}{Environment.NewLine}{new StackTrace(1, true)}",
+                    LogLevel.ERROR
+                );
+            }
         }
     }
 }

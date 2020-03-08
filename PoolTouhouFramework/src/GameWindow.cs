@@ -5,19 +5,21 @@ using ImGuiNET;
 using PoolTouhouFramework.GameStates;
 using PoolTouhouFramework.Utils;
 using Veldrid;
+using Veldrid.OpenGL;
 using Veldrid.OpenGLBinding;
 using Veldrid.Sdl2;
+using Veldrid.StartupUtilities;
 using static PoolTouhouFramework.PoolTouhou;
 
 namespace PoolTouhouFramework {
     public sealed class GameWindow : IDisposable {
         private readonly Sdl2Window window;
-        private readonly GraphicsDevice device;
+        private GraphicsDevice device;
 
         private static double tps;
 
         private static void UpdateLoop() {
-            PoolTouhou.Logger.Info("开始逻辑线程");
+            PoolTouhou.Logger.Log("开始逻辑线程");
             try {
                 ushort tickCount = 0;
                 long last = Watch.ElapsedTicks;
@@ -49,64 +51,67 @@ namespace PoolTouhouFramework {
                 }
             } catch (Exception e) {
                 running = false;
-                PoolTouhou.Logger.Info(e.Message + Environment.NewLine + e.StackTrace);
+                PoolTouhou.Logger.Log(e.Message + Environment.NewLine + e.StackTrace);
             }
         }
 
         private void DrawLoop() {
-            PoolTouhou.Logger.Info("开始渲染线程循环");
+            PoolTouhou.Logger.Log("开始渲染线程循环");
             try {
                 long last = 0;
                 while (window.Exists && running) {
                     long now = Watch.ElapsedTicks;
                     double delta = Stopwatch.Frequency / (double) (now - last);
+                    OpenGLNative.glClearColor(255, 1, 1, 0.5f);
                     OpenGLNative.glClear(ClearBufferMask.ColorBufferBit);
                     PoolTouhou.GameState.Draw(delta);
+
+                    device.SwapBuffers();
+                    GlUtil.CheckGlError();
                     last = now;
                 }
             } catch (Exception e) {
                 running = false;
-                PoolTouhou.Logger.Info(e.Message + Environment.NewLine + e.StackTrace);
+                PoolTouhou.Logger.Log(e.Message + Environment.NewLine + e.StackTrace);
             }
         }
 
         public void Init() {
             new Thread(
                 () => {
+                    device = VeldridStartup.CreateGraphicsDevice(
+                        window,
+                        GraphicsBackend.OpenGL
+                    );
+                    PoolTouhou.Logger.Log($"Using : {device.BackendType}");
+                    GlUtil.CheckGlError();
                     PoolTouhou.GameState = new LoadingMenuState();
-                    new Thread(DrawLoop).Start();
-                    UpdateLoop();
+                    new Thread(UpdateLoop).Start();
+                    DrawLoop();
                 }
             ).Start();
         }
 
         public GameWindow() {
-            window = new Sdl2Window(
-                "PoolTouhou",
-                50,
-                50,
-                1600,
-                900,
-                SDL_WindowFlags.OpenGL | SDL_WindowFlags.AllowHighDpi | SDL_WindowFlags.Shown,
-                false
-            ) {Visible = true};
-            device = OpenGlDeviceUtil.CreateDefaultOpenGlGraphicsDevice(window);
+            var windowInfo = new WindowCreateInfo {
+                X = 100, Y = 100, WindowWidth = 1600, WindowHeight = 900, WindowTitle = "PoolTouhou"
+            };
+            window = VeldridStartup.CreateWindow(windowInfo);
         }
 
 
         public void Dispose() {
-            PoolTouhou.Logger.Info("开始释放窗口的托管资源");
+            PoolTouhou.Logger.Log("开始释放窗口的托管资源");
             device?.Dispose();
             running = false;
         }
 
         public void RunMessageLoop() {
             while (window.Exists && running) {
-                Console.WriteLine("pump events");
                 var input = window.PumpEvents();
             }
             if (window.Exists) {
-                PoolTouhou.Logger.Info("窗口不存在 退出消息循环");
+                PoolTouhou.Logger.Log("窗口不存在 退出消息循环");
             }
             running = false;
         }
