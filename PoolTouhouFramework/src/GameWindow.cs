@@ -63,10 +63,10 @@ namespace PoolTouhouFramework {
                     long now = Watch.ElapsedTicks;
                     double delta = Stopwatch.Frequency / (double) (now - last);
                     OpenGLNative.glClearColor(0, 1, 1, 0.5f);
-                    // OpenGLNative.glClear(ClearBufferMask.ColorBufferBit | ClearBufferMask.AccumBufferBit | ClearBufferMask.None);
+                    OpenGLNative.glClear(ClearBufferMask.ColorBufferBit);
                     PoolTouhou.GameState.Draw(delta);
-                    device.SwapBuffers();
-                    // GlUtil.CheckGlError();
+                    Sdl2Native.SDL_GL_SwapWindow(window.SdlWindowHandle);
+                    GlUtil.CheckGlError();
                     last = now;
                 }
             } catch (Exception e) {
@@ -85,7 +85,8 @@ namespace PoolTouhouFramework {
                         },
                         GraphicsBackend.OpenGL
                     );
-                    device.SyncToVerticalBlank = true;
+                    Sdl2Native.SDL_GL_MakeCurrent(window.SdlWindowHandle, Sdl2Native.SDL_GL_CreateContext(window.SdlWindowHandle));
+                    Sdl2Native.SDL_GL_SetSwapInterval(1);
                     PoolTouhou.Logger.Log($"Using : {device.BackendType}");
                     GlUtil.CheckGlError();
                     PoolTouhou.GameState = new LoadingMenuState();
