@@ -62,12 +62,11 @@ namespace PoolTouhouFramework {
                 while (window.Exists && running) {
                     long now = Watch.ElapsedTicks;
                     double delta = Stopwatch.Frequency / (double) (now - last);
-                    OpenGLNative.glClearColor(255, 1, 1, 0.5f);
-                    OpenGLNative.glClear(ClearBufferMask.ColorBufferBit);
+                    OpenGLNative.glClearColor(0, 1, 1, 0.5f);
+                    // OpenGLNative.glClear(ClearBufferMask.ColorBufferBit | ClearBufferMask.AccumBufferBit | ClearBufferMask.None);
                     PoolTouhou.GameState.Draw(delta);
-
                     device.SwapBuffers();
-                    GlUtil.CheckGlError();
+                    // GlUtil.CheckGlError();
                     last = now;
                 }
             } catch (Exception e) {
@@ -81,8 +80,12 @@ namespace PoolTouhouFramework {
                 () => {
                     device = VeldridStartup.CreateGraphicsDevice(
                         window,
+                        new GraphicsDeviceOptions {
+                            SyncToVerticalBlank = true
+                        },
                         GraphicsBackend.OpenGL
                     );
+                    device.SyncToVerticalBlank = true;
                     PoolTouhou.Logger.Log($"Using : {device.BackendType}");
                     GlUtil.CheckGlError();
                     PoolTouhou.GameState = new LoadingMenuState();
@@ -93,9 +96,7 @@ namespace PoolTouhouFramework {
         }
 
         public GameWindow() {
-            var windowInfo = new WindowCreateInfo {
-                X = 100, Y = 100, WindowWidth = 1600, WindowHeight = 900, WindowTitle = "PoolTouhou"
-            };
+            var windowInfo = new WindowCreateInfo(100, 100, 1600, 900, WindowState.Normal, "PoolTouhou");
             window = VeldridStartup.CreateWindow(windowInfo);
         }
 

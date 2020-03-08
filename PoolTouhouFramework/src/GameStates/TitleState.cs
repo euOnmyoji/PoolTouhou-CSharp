@@ -61,7 +61,7 @@ namespace PoolTouhouFramework.GameStates {
             new Thread(
                 () => {
                     try {
-                        var dirInfo = new DirectoryInfo(".\\games");
+                        var dirInfo = new DirectoryInfo("./games");
 
                         if (!dirInfo.Exists) {
                             dirInfo.Create();
